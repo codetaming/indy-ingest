@@ -3,10 +3,10 @@ package main
 import (
 	"errors"
 	"log"
-
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/xeipuuv/gojsonschema"
+	"encoding/json"
 )
 
 type Response struct {
@@ -24,10 +24,9 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	log.Printf("Processing Lambda request %s\n", request.RequestContext.RequestID)
 
 	schemaUrl := request.Headers["describedBy"]
-	json := request.Body
-
+	bodyJson := request.Body
 	schemaLoader := gojsonschema.NewReferenceLoader(schemaUrl)
-	documentLoader := gojsonschema.NewStringLoader(json)
+	documentLoader := gojsonschema.NewStringLoader(bodyJson)
 
 	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
 	if err != nil {
@@ -50,9 +49,11 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		}
 	}
 
+	body, _ := json.Marshal(resultStr)
+
 	return events.APIGatewayProxyResponse{
 		Headers:    map[string]string{"Content-Type": "application/json"},
-		Body:       resultStr,
+		Body:       string(body),
 		StatusCode: 200,
 	}, nil
 
