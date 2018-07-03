@@ -1,0 +1,66 @@
+service: api
+
+provider:
+  name: aws
+  runtime: go1.x
+
+package:
+ exclude:
+   - ./**
+ include:
+   - ./bin/**
+
+functions:
+  create-submission:
+    handler: bin/dummy
+    events:
+      - http:
+          path: submissions
+          method: post
+  list-submissions:
+    handler: bin/dummy
+    events:
+      - http:
+          path: submissions
+          method: get
+  get-submission:
+    handler: bin/dummy
+    events:
+      - http:
+          path: submissions/{id}
+          method: get
+          request:
+            parameters:
+              paths:
+              id: true
+  create-metadata:
+    handler: bin/dummy
+    events:
+      - http:
+          path: submissions/{id}/metadata
+          method: post
+          request:
+            parameters:
+              paths:
+              id: true
+  list-metadata:
+    handler: bin/dummy
+    events:
+      - http:
+          path: submissions/{id}/metadata
+          method: get
+          request:
+            parameters:
+              paths:
+              id: true
+  get-metadata:
+    handler: bin/dummy
+    events:
+      - http:
+          path: submissions/{id}/metadata/{uuid}
+          method: get
+          request:
+            parameters:
+              paths:
+                id: true
+                uuid: true
