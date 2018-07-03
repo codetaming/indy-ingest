@@ -64,6 +64,12 @@ functions:
               paths:
                 id: true
                 uuid: true
+  validate:
+    handler: bin/validate
+    events:
+    - http:
+        path: validate
+        method: post
 
 resources:
   Resources:
