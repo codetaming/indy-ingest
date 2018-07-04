@@ -3,6 +3,14 @@ service: api
 provider:
   name: aws
   runtime: go1.x
+  environment:
+    SUBMISSIONS_TABLE: "${self:service}-${opt:stage, self:provider.stage}-submissions"
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:GetItem
+          - dynamodb:PutItem
+        Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.SUBMISSIONS_TABLE}"
 
 package:
  exclude:
@@ -12,7 +20,7 @@ package:
 
 functions:
   create-submission:
-    handler: bin/dummy
+    handler: bin/create_submission
     events:
       - http:
           path: submissions
@@ -73,10 +81,10 @@ functions:
 
 resources:
   Resources:
-    DynamoDbTable:
+    SubmissionsDynamoDbTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: submissions
+        TableName: ${self:provider.environment.SUBMISSIONS_TABLE}
         AttributeDefinitions:
           - AttributeName: owner
             AttributeType: S
@@ -90,18 +98,3 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-    DynamoDBIamPolicy:
-      Type: AWS::IAM::Policy
-      DependsOn: DynamoDbTable
-      Properties:
-        PolicyName: lambda-dynamodb-submissions
-        PolicyDocument:
-          Version: '2012-10-17'
-          Statement:
-            - Effect: Allow
-              Action:
-                - dynamodb:GetItem
-                - dynamodb:PutItem
-              Resource: arn:aws:dynamodb:*:*:table/submissions
-        Roles:
-          - Ref: IamRoleLambdaExecution
