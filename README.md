@@ -4,7 +4,7 @@
 [![GoCard][3]][4]
 [![Build Status][5]][6]
 [![codecov][7]][8]
-[![Codacy Badge]
+[![Codacy Badge][9]][10]
 
 [1]: https://godoc.org/github.com/codetaming/go-serverless-ingest?status.svg
 [2]: https://godoc.org/github.com/codetaming/go-serverless-ingest
