@@ -1,16 +1,16 @@
-service: api
+service: go-serverless-ingest-api
 
 provider:
   name: aws
   runtime: go1.x
   environment:
     SUBMISSIONS_TABLE: "${self:service}-${opt:stage, self:provider.stage}-submissions"
-    iamRoleStatements:
-      - Effect: Allow
-        Action:
-          - dynamodb:GetItem
-          - dynamodb:PutItem
-        Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.SUBMISSIONS_TABLE}"
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.SUBMISSIONS_TABLE}"
 
 package:
  exclude:

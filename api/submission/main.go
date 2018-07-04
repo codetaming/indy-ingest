@@ -1,23 +1,24 @@
 package main
 
 import (
-	"fmt"
-	"github.com/aws/aws-lambda-go/events"
-	"encoding/json"
-	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/aws/aws-sdk-go/aws"
 	"os"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/aws"
+	"fmt"
+	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
+	"log"
+	"encoding/json"
+	"github.com/aws/aws-lambda-go/lambda"
 )
 
-type Submission struct {
-	owner        string `json:"owner"`
-	submissionId string `json:"submission_id"`
-}
-
 var ddb *dynamodb.DynamoDB
+
+type Submission struct {
+	Owner        string `dynamodbav:"owner"`
+	SubmissionId string `dynamodbav:"submission_id"`
+}
 
 func init() {
 	region := os.Getenv("AWS_REGION")
@@ -31,22 +32,27 @@ func init() {
 }
 
 func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	fmt.Println("Create Submission")
+	log.Println("Create Submission")
+
+	s := Submission{
+		Owner:        "ABC123",
+		SubmissionId: "123",
+	}
+
+	av, err := dynamodbattribute.MarshalMap(s)
+	if err != nil {
+		panic(fmt.Sprintf("failed to DynamoDB marshal Record, %v", err))
+	}
+	for key, value := range av {
+		log.Println("Key:", key, "Value:", value)
+	}
 
 	var (
 		tableName = aws.String(os.Getenv("SUBMISSIONS_TABLE"))
 	)
 
-	// Initialize product
-	submission := &Submission{
-		owner:        "",
-		submissionId: "123",
-	}
-
-	// Write to DynamoDB
-	item, _ := dynamodbattribute.MarshalMap(submission)
 	input := &dynamodb.PutItemInput{
-		Item:      item,
+		Item:      av,
 		TableName: tableName,
 	}
 	if _, err := ddb.PutItem(input); err != nil {
@@ -55,7 +61,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 			StatusCode: 500,
 		}, nil
 	} else {
-		body, _ := json.Marshal(submission)
+		body, _ := json.Marshal(s)
 		return events.APIGatewayProxyResponse{
 			Body:       string(body),
 			StatusCode: 200,
