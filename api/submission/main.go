@@ -11,6 +11,7 @@ import (
 	"log"
 	"encoding/json"
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/satori/go.uuid"
 )
 
 var ddb *dynamodb.DynamoDB
@@ -34,9 +35,11 @@ func init() {
 func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	log.Println("Create Submission")
 
+	u := uuid.Must(uuid.NewV4()).String()
+
 	s := Submission{
 		Owner:        "ABC123",
-		SubmissionId: "123",
+		SubmissionId: u,
 	}
 
 	av, err := dynamodbattribute.MarshalMap(s)

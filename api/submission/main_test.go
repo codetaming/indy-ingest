@@ -3,7 +3,7 @@ package main_test
 import (
 	"testing"
 
-	"github.com/codetaming/go-serverless-ingest/api/submission"
+	"github.com/codetaming/indy-ingest/api/submission"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/aws/aws-lambda-go/events"
