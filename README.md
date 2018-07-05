@@ -1,4 +1,4 @@
-# go-serverless-ingest
+# Indy Ingest
 
 [![GoDoc][1]][2]
 [![GoCard][3]][4]
