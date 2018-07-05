@@ -26,7 +26,7 @@ func init() {
 	if session, err := session.NewSession(&aws.Config{
 		Region: &region,
 	}); err != nil {
-		fmt.Println(fmt.Sprintf("Failed to connect to AWS: %s", err.Error()))
+		log.Println(fmt.Sprintf("Failed to connect to AWS: %s", err.Error()))
 	} else {
 		ddb = dynamodb.New(session)
 	}
