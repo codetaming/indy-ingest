@@ -12,13 +12,15 @@ import (
 	"encoding/json"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/satori/go.uuid"
+	"time"
 )
 
 var ddb *dynamodb.DynamoDB
 
 type Submission struct {
-	Owner        string `dynamodbav:"owner"`
-	SubmissionId string `dynamodbav:"submission_id"`
+	Owner        string    `dynamodbav:"owner"`
+	SubmissionId string    `dynamodbav:"submission_id"`
+	Created      time.Time `dynamodbav:"created" type:"timestamp" timestampFormat:"unix"`
 }
 
 func init() {
@@ -36,10 +38,12 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	log.Println("Create Submission")
 
 	u := uuid.Must(uuid.NewV4()).String()
+	t := time.Now()
 
 	s := Submission{
 		Owner:        "ABC123",
 		SubmissionId: u,
+		Created:      t,
 	}
 
 	av, err := dynamodbattribute.MarshalMap(s)
