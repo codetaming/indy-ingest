@@ -3,10 +3,9 @@ package main_test
 import (
 	"testing"
 
-	"github.com/codetaming/indy-ingest/api/validate"
-
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/stretchr/testify/assert"
+	"github.com/codetaming/indy-ingest/api/validate"
 )
 
 func TestHandler(t *testing.T) {
@@ -51,14 +50,14 @@ func TestHandler(t *testing.T) {
     ],
     "describedBy": "https://schema.humancellatlas.org/type/biomaterial/5.1.0/specimen_from_organism"
 }`},
-			expect: "The document is valid\n",
+			expect: "{\"Valid\":true,\"Message\":\"The document is valid\",\"Errors\":null}",
 			err:    nil,
 		},
 		{
 			request: events.APIGatewayProxyRequest{
 				Headers: headers,
 				Body:    "{}"},
-			expect: "The document is not valid. see errors :\n- %s\ndescribedBy is required- %s\nschema_type is required- %s\nbiomaterial_core is required- %s\norgan is required",
+			expect: "{\"Valid\":false,\"Message\":\"The document is not valid\",\"Errors\":[\"describedBy is required\",\"schema_type is required\",\"biomaterial_core is required\",\"organ is required\"]}",
 			err:    nil,
 		},
 	}
