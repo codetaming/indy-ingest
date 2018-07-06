@@ -7,3 +7,4 @@ build:
 	env GOOS=linux go build -ldflags="-s -w" -o bin/create_submission create_submission/main.go
 	env GOOS=linux go build -ldflags="-s -w" -o bin/dummy dummy/main.go
 	env GOOS=linux go build -ldflags="-s -w" -o bin/validate validate/main.go
+	env GOOS=linux go build -ldflags="-s -w" -o bin/submit_metadata submit_metadata/main.go

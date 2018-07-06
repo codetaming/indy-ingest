@@ -42,7 +42,7 @@ functions:
               paths:
               id: true
   create-metadata:
-    handler: bin/dummy
+    handler: bin/submit_metadata
     events:
       - http:
           path: submissions/{id}/metadata
