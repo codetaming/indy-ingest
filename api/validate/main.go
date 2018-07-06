@@ -9,47 +9,22 @@ import (
 	"encoding/json"
 )
 
-type Response struct {
-	Message string `json:"message"`
-}
-
 var (
-	// ErrNameNotProvided is thrown when a name is not provided
 	ErrNameNotProvided = errors.New("no name was provided in the HTTP body")
 )
 
 func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
-	// stdout and stderr are sent to AWS CloudWatch Logs
 	log.Printf("Processing Lambda request %s\n", request.RequestContext.RequestID)
 
-	schemaUrl := request.Headers["describedBy"]
-	bodyJson := request.Body
-	schemaLoader := gojsonschema.NewReferenceLoader(schemaUrl)
-	documentLoader := gojsonschema.NewStringLoader(bodyJson)
-
-	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	// If no name is provided in the HTTP request body, throw an error
 	if len(request.Body) < 1 {
 		return events.APIGatewayProxyResponse{}, ErrNameNotProvided
 	}
 
-	var resultStr string
-
-	if result.Valid() {
-		resultStr = "The document is valid\n"
-	} else {
-		resultStr = "The document is not valid. see errors :\n"
-		for _, desc := range result.Errors() {
-			resultStr = resultStr + "- %s\n" + desc.Description()
-		}
-	}
-
-	body, _ := json.Marshal(resultStr)
+	schemaUrl := request.Headers["describedBy"]
+	bodyJson := request.Body
+	result := validate(schemaUrl, bodyJson)
+	body, _ := json.Marshal(result)
 
 	return events.APIGatewayProxyResponse{
 		Headers:    map[string]string{"Content-Type": "application/json"},
@@ -57,6 +32,43 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		StatusCode: 200,
 	}, nil
 
+}
+
+type ValidationResult struct {
+	Valid   bool
+	Message string
+	Errors  []string
+}
+
+func validate(schemaUrl string, bodyJson string) (ValidationResult) {
+
+	schemaLoader := gojsonschema.NewReferenceLoader(schemaUrl)
+	documentLoader := gojsonschema.NewStringLoader(bodyJson)
+	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	var message string
+	var errors []string
+
+	if result.Valid() {
+		message = "The document is valid"
+	} else {
+		message = "The document is not valid"
+		for _, desc := range result.Errors() {
+			errors = append(errors, desc.Description())
+		}
+	}
+
+	vr := ValidationResult{
+		Valid:   result.Valid(),
+		Message: message,
+		Errors:  errors,
+	}
+
+	return vr
 }
 
 func main() {
