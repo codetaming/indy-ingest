@@ -1,4 +1,4 @@
-package submit_metadata_test
+package main_test
 
 import (
 	"testing"
@@ -66,7 +66,7 @@ func TestHandler(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		response, err := submit_metadata.Handler(test.request)
+		response, err := main.Handler(test.request)
 		assert.IsType(t, test.err, err)
 		assert.Equal(t, test.expectedMessage, response.Body)
 		assert.Equal(t, test.expectedCode, response.StatusCode)

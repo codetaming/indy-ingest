@@ -1,4 +1,4 @@
-package submit_metadata
+package main
 
 import (
 	"github.com/aws/aws-lambda-go/events"
