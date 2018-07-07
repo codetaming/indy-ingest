@@ -5,12 +5,18 @@ provider:
   runtime: go1.x
   environment:
     SUBMISSIONS_TABLE: "${self:service}-${opt:stage, self:provider.stage}-submissions"
+    METADATA_TABLE: "${self:service}-${opt:stage, self:provider.stage}-metadata"
   iamRoleStatements:
     - Effect: Allow
       Action:
         - dynamodb:GetItem
         - dynamodb:PutItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.SUBMISSIONS_TABLE}"
+    - Effect: Allow
+      Action:
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.METADATA_TABLE}"
 
 package:
  exclude:
@@ -81,20 +87,35 @@ functions:
 
 resources:
   Resources:
-    SubmissionsDynamoDbTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: ${self:provider.environment.SUBMISSIONS_TABLE}
-        AttributeDefinitions:
-          - AttributeName: owner
-            AttributeType: S
-          - AttributeName: submission_id
-            AttributeType: S
-        KeySchema:
-          - AttributeName: owner
-            KeyType: HASH
-          - AttributeName: submission_id
-            KeyType: RANGE
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
+  SubmissionsDynamoDbTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ${self:provider.environment.SUBMISSIONS_TABLE}
+      AttributeDefinitions:
+        - AttributeName: owner
+          AttributeType: S
+        - AttributeName: submission_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: owner
+          KeyType: HASH
+        - AttributeName: submission_id
+          KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+  MetadataDynamoDbTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ${self:provider.environment.METADATA_TABLE}
+      AttributeDefinitions:
+        - AttributeName: submission_id
+          AttributeType: S
+        - AttributeName: metadata_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: submission_id
+          KeyType: HASH
+        - AttributeName: metadata_id
+          KeyType: RANGE
+      ProvisionedThroughput:

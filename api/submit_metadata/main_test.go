@@ -14,6 +14,10 @@ func TestHandler(t *testing.T) {
 		"describedBy": "https://schema.humancellatlas.org/type/biomaterial/5.1.0/specimen_from_organism",
 	}
 
+	pathParameters := map[string]string{
+		"id": "12345",
+	}
+
 	tests := []struct {
 		request events.APIGatewayProxyRequest
 		expectedMessage string
@@ -25,6 +29,7 @@ func TestHandler(t *testing.T) {
 			// when a valid name is provided in the HTTP body
 
 			request: events.APIGatewayProxyRequest{
+				PathParameters: pathParameters,
 				Headers: headers,
 				Body: `{
     "organ": {
@@ -51,8 +56,8 @@ func TestHandler(t *testing.T) {
     ],
     "describedBy": "https://schema.humancellatlas.org/type/biomaterial/5.1.0/specimen_from_organism"
 }`},
-			expectedMessage: "{\"Valid\":true,\"Message\":\"The document is valid\",\"Errors\":null}",
-			expectedCode: 200,
+			expectedMessage: "{\"SubmissionId\":\"12345\",\"MetadataId\":\"b74d1c3f-79e6-408a-9f40-a1c572bcb961\",\"DescribedBy\":\"https://schema.humancellatlas.org/type/biomaterial/5.1.0/specimen_from_organism\",\"Created\":\"2018-07-07T12:40:41.206641545+01:00\"}",
+			expectedCode: 201,
 			err:    nil,
 		},
 		{
