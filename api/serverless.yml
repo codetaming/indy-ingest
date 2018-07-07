@@ -119,3 +119,5 @@ resources:
           - AttributeName: metadata_id
             KeyType: RANGE
         ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
