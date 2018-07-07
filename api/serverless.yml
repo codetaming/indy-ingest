@@ -87,35 +87,35 @@ functions:
 
 resources:
   Resources:
-  SubmissionsDynamoDbTable:
-    Type: AWS::DynamoDB::Table
-    Properties:
-      TableName: ${self:provider.environment.SUBMISSIONS_TABLE}
-      AttributeDefinitions:
-        - AttributeName: owner
-          AttributeType: S
-        - AttributeName: submission_id
-          AttributeType: S
-      KeySchema:
-        - AttributeName: owner
-          KeyType: HASH
-        - AttributeName: submission_id
-          KeyType: RANGE
-      ProvisionedThroughput:
-        ReadCapacityUnits: 1
-        WriteCapacityUnits: 1
-  MetadataDynamoDbTable:
-    Type: AWS::DynamoDB::Table
-    Properties:
-      TableName: ${self:provider.environment.METADATA_TABLE}
-      AttributeDefinitions:
-        - AttributeName: submission_id
-          AttributeType: S
-        - AttributeName: metadata_id
-          AttributeType: S
-      KeySchema:
-        - AttributeName: submission_id
-          KeyType: HASH
-        - AttributeName: metadata_id
-          KeyType: RANGE
-      ProvisionedThroughput:
+    SubmissionsDynamoDbTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.SUBMISSIONS_TABLE}
+        AttributeDefinitions:
+          - AttributeName: owner
+            AttributeType: S
+          - AttributeName: submission_id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: owner
+            KeyType: HASH
+          - AttributeName: submission_id
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    MetadataDynamoDbTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.METADATA_TABLE}
+        AttributeDefinitions:
+          - AttributeName: submission_id
+            AttributeType: S
+          - AttributeName: metadata_id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: submission_id
+            KeyType: HASH
+          - AttributeName: metadata_id
+            KeyType: RANGE
+        ProvisionedThroughput:
