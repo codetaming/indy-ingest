@@ -15,4 +15,8 @@ type Metadata struct {
 	Created      time.Time `dynamodbav:"created" type:"timestamp" timestampFormat:"unix"`
 }
 
+type ErrorMessage struct {
+	Message string
+}
+
 var DefaultOwner = "dan"

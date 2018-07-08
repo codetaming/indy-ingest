@@ -27,16 +27,24 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 
 	exists, err := checkSubmissionIdExists(submissionId)
 
+	headers := map[string]string{"Content-Type": "application/json"}
+
 	if err != nil {
+		errorMessage := model.ErrorMessage{Message: err.Error()}
+		jsonErrorMessage, _ := json.Marshal(errorMessage)
 		return events.APIGatewayProxyResponse{
-			Body:       err.Error(),
+			Headers:    headers,
+			Body:       string(jsonErrorMessage),
 			StatusCode: 500,
 		}, nil
 	}
 
 	if !exists {
+		errorMessage := model.ErrorMessage{Message: submissionId + " not found"}
+		jsonErrorMessage, _ := json.Marshal(errorMessage)
 		return events.APIGatewayProxyResponse{
-			Body:       submissionId + " not found",
+			Headers:    headers,
+			Body:       string(jsonErrorMessage),
 			StatusCode: 404,
 		}, nil
 	}
@@ -50,14 +58,14 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	if result.Valid {
 		metadata, _ := createMetadata(submissionId, schemaUrl)
 		return events.APIGatewayProxyResponse{
-			Headers:    map[string]string{"Content-Type": "application/json"},
+			Headers:    headers,
 			Body:       string(metadata),
 			StatusCode: 201,
 		}, nil
 	} else
 	{
 		return events.APIGatewayProxyResponse{
-			Headers:    map[string]string{"Content-Type": "application/json"},
+			Headers:    headers,
 			Body:       string(body),
 			StatusCode: 400,
 		}, nil
