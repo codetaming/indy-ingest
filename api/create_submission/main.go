@@ -12,16 +12,12 @@ import (
 	"encoding/json"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/satori/go.uuid"
+	"github.com/codetaming/indy-ingest/api/model"
 	"time"
 )
 
 var ddb *dynamodb.DynamoDB
 
-type Submission struct {
-	Owner        string    `dynamodbav:"owner"`
-	SubmissionId string    `dynamodbav:"submission_id"`
-	Created      time.Time `dynamodbav:"created" type:"timestamp" timestampFormat:"unix"`
-}
 
 func init() {
 	region := os.Getenv("AWS_REGION")
@@ -40,7 +36,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	u := uuid.Must(uuid.NewV4()).String()
 	t := time.Now()
 
-	s := Submission{
+	s := model.Submission{
 		Owner:        "ABC123",
 		SubmissionId: u,
 		Created:      t,

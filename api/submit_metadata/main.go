@@ -14,16 +14,10 @@ import (
 	"os"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/codetaming/indy-ingest/api/model"
 )
 
 var ddb *dynamodb.DynamoDB
-
-type Metadata struct {
-	SubmissionId string    `dynamodbav:"submission_id"`
-	MetadataId   string    `dynamodbav:"metadata_id"`
-	DescribedBy  string    `dynamodbav:"described_by"`
-	Created      time.Time `dynamodbav:"created" type:"timestamp" timestampFormat:"unix"`
-}
 
 func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
@@ -31,7 +25,17 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 
 	submissionId := request.PathParameters["id"]
 
-	if !checkSubmissionIdExists(submissionId) {
+	exists, err := checkSubmissionIdExists(submissionId)
+
+	if err!=nil {
+		return events.APIGatewayProxyResponse{
+			Headers:    map[string]string{"Content-Type": "application/json"},
+			Body:       err.Error(),
+			StatusCode: 500,
+		}, nil
+	}
+
+	if !exists{
 		return events.APIGatewayProxyResponse{
 			Headers:    map[string]string{"Content-Type": "application/json"},
 			Body:       string(submissionId + " not found"),
@@ -62,7 +66,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	}
 }
 
-func checkSubmissionIdExists(submissionId string) bool {
+func checkSubmissionIdExists(submissionId string) (bool, error){
 
 	var (
 		tableName = aws.String(os.Getenv("SUBMISSIONS_TABLE"))
@@ -78,26 +82,22 @@ func checkSubmissionIdExists(submissionId string) bool {
 
 	if err != nil {
 		fmt.Println(err.Error())
-		return false
+		return false, err
 	}
 
-	type Item struct {
-		SubmissionId string `dynamodbav:"submission_id"`
-	}
+	submission := model.Submission{}
 
-	item := Item{}
-
-	err = dynamodbattribute.UnmarshalMap(result.Item, &item)
+	err = dynamodbattribute.UnmarshalMap(result.Item, &submission)
 
 	if err != nil {
-		return false
+		return false, err
 	}
 
-	if item.SubmissionId == "" {
-		return false
+	if submission.SubmissionId == "" {
+		return false, nil
 	}
 
-	return true
+	return true, nil
 }
 
 func init() {
@@ -117,7 +117,7 @@ func createMetadata(submissionId string, schemaUrl string) ([]byte, error) {
 	u := uuid.Must(uuid.NewV4()).String()
 	t := time.Now()
 
-	s := Metadata{
+	s := model.Metadata{
 		SubmissionId: submissionId,
 		MetadataId:   u,
 		DescribedBy:  schemaUrl,
