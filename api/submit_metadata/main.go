@@ -105,6 +105,7 @@ func createMetadataFile(submissionId string, metadataId, bodyJson string) (fileL
 	}
 	result, err := s3Uploader.Upload(upParams)
 	if err != nil {
+		panic(fmt.Sprintf("failed to create S3 file, %v", err))
 		return "", err
 	}
 	return result.Location, nil
