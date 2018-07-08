@@ -80,7 +80,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		}
 		metadataSuccessMessage := model.MetadataSuccessMessage{
 			Content: metadataRecord,
-			File: fileLocation,
+			File:    fileLocation,
 		}
 		jsonMetadataSuccessMessage, _ := json.Marshal(metadataSuccessMessage)
 		return events.APIGatewayProxyResponse{
@@ -99,14 +99,15 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	}
 }
 
-func createMetadataFile(submissionId string, metadataId, bodyJson string) (fileLocation string, err error) {
+func createMetadataFile(submissionId string, metadataId string, bodyJson string) (fileLocation string, err error) {
 	key := submissionId + "/" + metadataId
-
+	contentType := "application/json"
 	fmt.Println("Uploading file to S3...")
-		upParams := &s3manager.UploadInput{
-		Bucket: aws.String(os.Getenv("METADATA_BUCKET")),
-		Key:    &key,
-		Body:   strings.NewReader(bodyJson),
+	upParams := &s3manager.UploadInput{
+		Bucket:      aws.String(os.Getenv("METADATA_BUCKET")),
+		ContentType: &contentType,
+		Key:         &key,
+		Body:        strings.NewReader(bodyJson),
 	}
 	result, err := s3Uploader.Upload(upParams)
 	if err != nil {
