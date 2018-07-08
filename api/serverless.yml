@@ -6,6 +6,7 @@ provider:
   environment:
     SUBMISSIONS_TABLE: "${self:service}-${opt:stage, self:provider.stage}-submissions"
     METADATA_TABLE: "${self:service}-${opt:stage, self:provider.stage}-metadata"
+    METADATA_BUCKET: "${self:service}-${opt:stage, self:provider.stage}-metadata"
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -121,3 +122,19 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
+    MetadataBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.METADATA_BUCKET}
+        AccessControl: Private
+        CorsConfiguration:
+          CorsRules:
+          - AllowedMethods:
+            - GET
+            - PUT
+            - POST
+            - HEAD
+            AllowedOrigins:
+            - "*"
+            AllowedHeaders:
+            - "*"
