@@ -1,14 +1,11 @@
 package validator
 
-import "github.com/xeipuuv/gojsonschema"
+import (
+	"github.com/xeipuuv/gojsonschema"
+	"github.com/codetaming/indy-ingest/api/model"
+)
 
-type ValidationResult struct {
-	Valid   bool
-	Message string
-	Errors  []string
-}
-
-func Validate(schemaUrl string, bodyJson string) (ValidationResult) {
+func Validate(schemaUrl string, bodyJson string) (model.ValidationResult) {
 
 	schemaLoader := gojsonschema.NewReferenceLoader(schemaUrl)
 	documentLoader := gojsonschema.NewStringLoader(bodyJson)
@@ -30,7 +27,7 @@ func Validate(schemaUrl string, bodyJson string) (ValidationResult) {
 		}
 	}
 
-	vr := ValidationResult{
+	vr := model.ValidationResult{
 		Valid:   result.Valid(),
 		Message: message,
 		Errors:  errors,

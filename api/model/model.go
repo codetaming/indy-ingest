@@ -15,6 +15,12 @@ type Metadata struct {
 	Created     time.Time `dynamodbav:"created" type:"timestamp" timestampFormat:"unix" json:"created"`
 }
 
+type ValidationResult struct {
+	Valid   bool     `json:"valid"`
+	Message string   `json:"message"`
+	Errors  []string `json:"errors"`
+}
+
 type ErrorMessage struct {
 	Message string `json:"message"`
 }
