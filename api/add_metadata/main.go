@@ -77,8 +77,8 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 			}, nil
 		}
 		metadataSuccessMessage := model.MetadataSuccessMessage{
-			Content: metadataRecord,
-			File:    fileLocation,
+			Info: metadataRecord,
+			File: fileLocation,
 		}
 		jsonMetadataSuccessMessage, _ := json.Marshal(metadataSuccessMessage)
 		return events.APIGatewayProxyResponse{
@@ -117,12 +117,12 @@ func createMetadataFile(datasetId string, metadataId string, bodyJson string) (f
 
 func init() {
 	region := os.Getenv("AWS_REGION")
-	if session, err := session.NewSession(&aws.Config{
+	if ses, err := session.NewSession(&aws.Config{
 		Region: &region,
 	}); err != nil {
 		fmt.Println(fmt.Sprintf("Failed to connect to AWS: %s", err.Error()))
 	} else {
-		s3Uploader = s3manager.NewUploader(session)
+		s3Uploader = s3manager.NewUploader(ses)
 	}
 }
 

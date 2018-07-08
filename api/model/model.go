@@ -22,6 +22,6 @@ type ErrorMessage struct {
 var DefaultOwner = "dan"
 
 type MetadataSuccessMessage struct {
-	Content Metadata `json:"content"`
-	File    string `json:"file"`
+	Info Metadata `json:"info"`
+	File string   `json:"file"`
 }

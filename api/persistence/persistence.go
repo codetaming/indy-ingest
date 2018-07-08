@@ -15,12 +15,12 @@ var ddb *dynamodb.DynamoDB
 
 func init() {
 	region := os.Getenv("AWS_REGION")
-	if session, err := session.NewSession(&aws.Config{
+	if ses, err := session.NewSession(&aws.Config{
 		Region: &region,
 	}); err != nil {
 		log.Println(fmt.Sprintf("Failed to connect to AWS: %s", err.Error()))
 	} else {
-		ddb = dynamodb.New(session)
+		ddb = dynamodb.New(ses)
 	}
 }
 
