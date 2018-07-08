@@ -11,7 +11,7 @@ import (
 	"github.com/codetaming/indy-ingest/api/persistence"
 )
 
-func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+func Handler(_ events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	log.Println("Create Dataset")
 
 	u := uuid.Must(uuid.NewV4()).String()
