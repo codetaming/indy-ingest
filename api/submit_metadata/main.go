@@ -69,6 +69,15 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 			}, nil
 		}
 		fileLocation, err := createMetadataFile(submissionId, metadataId, bodyJson)
+		if err != nil {
+			errorMessage := model.ErrorMessage{Message: err.Error()}
+			jsonErrorMessage, _ := json.Marshal(errorMessage)
+			return events.APIGatewayProxyResponse{
+				Headers:    headers,
+				Body:       string(jsonErrorMessage),
+				StatusCode: 500,
+			}, nil
+		}
 		return events.APIGatewayProxyResponse{
 			Headers:    headers,
 			Body:       string(fileLocation),
@@ -95,6 +104,9 @@ func createMetadataFile(submissionId string, metadataId, bodyJson string) (fileL
 		Body:   strings.NewReader(bodyJson),
 	}
 	result, err := s3Uploader.Upload(upParams)
+	if err != nil {
+		return "", err
+	}
 	return result.Location, nil
 }
 
@@ -116,7 +128,6 @@ func checkSubmissionIdExists(submissionId string) (bool, error) {
 	})
 
 	if err != nil {
-		fmt.Println(err.Error())
 		return false, err
 	}
 
