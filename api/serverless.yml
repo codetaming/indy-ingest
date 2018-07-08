@@ -32,7 +32,7 @@ package:
 
 functions:
   create-dataset:
-    handler: bin/dataset
+    handler: bin/create_dataset
     events:
       - http:
           path: dataset
