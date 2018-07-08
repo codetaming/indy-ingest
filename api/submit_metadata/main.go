@@ -15,9 +15,12 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/codetaming/indy-ingest/api/model"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"strings"
 )
 
 var ddb *dynamodb.DynamoDB
+var s3Uploader *s3manager.Uploader
 
 func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
@@ -53,23 +56,46 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	bodyJson := request.Body
 
 	result := validator.Validate(schemaUrl, bodyJson)
-	body, _ := json.Marshal(result)
 
 	if result.Valid {
-		metadata, _ := createMetadata(submissionId, schemaUrl)
+		_, metadataId, err := createMetadataRecord(submissionId, schemaUrl)
+		if err != nil {
+			errorMessage := model.ErrorMessage{Message: err.Error()}
+			jsonErrorMessage, _ := json.Marshal(errorMessage)
+			return events.APIGatewayProxyResponse{
+				Headers:    headers,
+				Body:       string(jsonErrorMessage),
+				StatusCode: 500,
+			}, nil
+		}
+		fileLocation, err := createMetadataFile(submissionId, metadataId, bodyJson)
 		return events.APIGatewayProxyResponse{
 			Headers:    headers,
-			Body:       string(metadata),
+			Body:       string(fileLocation),
 			StatusCode: 201,
 		}, nil
 	} else
 	{
+		validationResultJson, _ := json.Marshal(result)
 		return events.APIGatewayProxyResponse{
 			Headers:    headers,
-			Body:       string(body),
+			Body:       string(validationResultJson),
 			StatusCode: 400,
 		}, nil
 	}
+}
+
+func createMetadataFile(submissionId string, metadataId, bodyJson string) (fileLocation string, err error) {
+	key := submissionId + "/" + metadataId
+
+	fmt.Println("Uploading file to S3...")
+		upParams := &s3manager.UploadInput{
+		Bucket: aws.String(os.Getenv("METADATA_BUCKET")),
+		Key:    &key,
+		Body:   strings.NewReader(bodyJson),
+	}
+	result, err := s3Uploader.Upload(upParams)
+	return result.Location, nil
 }
 
 func checkSubmissionIdExists(submissionId string) (bool, error) {
@@ -117,10 +143,11 @@ func init() {
 		fmt.Println(fmt.Sprintf("Failed to connect to AWS: %s", err.Error()))
 	} else {
 		ddb = dynamodb.New(session)
+		s3Uploader = s3manager.NewUploader(session)
 	}
 }
 
-func createMetadata(submissionId string, schemaUrl string) ([]byte, error) {
+func createMetadataRecord(submissionId string, schemaUrl string) (metadataRecord []byte, metadataId string, err error) {
 	log.Println("Create Metadata")
 
 	u := uuid.Must(uuid.NewV4()).String()
@@ -136,7 +163,7 @@ func createMetadata(submissionId string, schemaUrl string) ([]byte, error) {
 	av, err := dynamodbattribute.MarshalMap(s)
 	if err != nil {
 		panic(fmt.Sprintf("failed to DynamoDB marshal Record, %v", err))
-		return nil, err
+		return nil, "", err
 	}
 
 	var (
@@ -149,9 +176,9 @@ func createMetadata(submissionId string, schemaUrl string) ([]byte, error) {
 	}
 	if _, err := ddb.PutItem(input); err != nil {
 		body, _ := json.Marshal(s)
-		return body, nil
+		return body, u, nil
 	} else {
-		return nil, err
+		return nil, "", err
 	}
 }
 
