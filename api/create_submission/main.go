@@ -18,7 +18,6 @@ import (
 
 var ddb *dynamodb.DynamoDB
 
-
 func init() {
 	region := os.Getenv("AWS_REGION")
 	if session, err := session.NewSession(&aws.Config{
@@ -37,7 +36,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	t := time.Now()
 
 	s := model.Submission{
-		Owner:        "ABC123",
+		Owner:        model.DefaultOwner,
 		SubmissionId: u,
 		Created:      t,
 	}

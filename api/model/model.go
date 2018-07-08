@@ -14,3 +14,5 @@ type Metadata struct {
 	DescribedBy  string    `dynamodbav:"described_by"`
 	Created      time.Time `dynamodbav:"created" type:"timestamp" timestampFormat:"unix"`
 }
+
+var DefaultOwner = "dan"
