@@ -132,3 +132,15 @@ resources:
       Properties:
         BucketName: ${self:provider.environment.METADATA_BUCKET}
         AccessControl: Private
+    S3BucketPermissions:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: ${self:provider.environment.METADATA_BUCKET}
+        PolicyDocument:
+          Statement:
+            - Principal: "*"
+              Action:
+                - s3:GetObject
+              Effect: Allow
+              Sid: "AddPerm"
+              Resource: "arn:aws:s3:::${self:provider.environment.METADATA_BUCKET}/*"
