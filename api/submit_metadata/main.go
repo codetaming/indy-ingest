@@ -29,7 +29,6 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 
 	if err != nil {
 		return events.APIGatewayProxyResponse{
-			Headers:    map[string]string{"Content-Type": "application/json"},
 			Body:       err.Error(),
 			StatusCode: 500,
 		}, nil
@@ -37,8 +36,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 
 	if !exists {
 		return events.APIGatewayProxyResponse{
-			Headers:    map[string]string{"Content-Type": "application/json"},
-			Body:       string(submissionId + " not found"),
+			Body:       submissionId + " not found",
 			StatusCode: 404,
 		}, nil
 	}
@@ -74,7 +72,7 @@ func checkSubmissionIdExists(submissionId string) (bool, error) {
 	result, err := ddb.GetItem(&dynamodb.GetItemInput{
 		TableName: tableName,
 		Key: map[string]*dynamodb.AttributeValue{
-			"owner_id": {
+			"owner": {
 				S: aws.String(model.DefaultOwner),
 			},
 			"submission_id": {
