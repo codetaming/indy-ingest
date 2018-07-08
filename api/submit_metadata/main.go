@@ -71,7 +71,7 @@ func checkSubmissionIdExists(submissionId string) bool {
 		TableName: tableName,
 		Key: map[string]*dynamodb.AttributeValue{
 			"submission_id": {
-				N: aws.String(submissionId),
+				S: aws.String(submissionId),
 			},
 		},
 	})
@@ -127,9 +127,7 @@ func createMetadata(submissionId string, schemaUrl string) ([]byte, error) {
 	av, err := dynamodbattribute.MarshalMap(s)
 	if err != nil {
 		panic(fmt.Sprintf("failed to DynamoDB marshal Record, %v", err))
-	}
-	for key, value := range av {
-		log.Println("Key:", key, "Value:", value)
+		return nil, err
 	}
 
 	var (
