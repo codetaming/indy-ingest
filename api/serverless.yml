@@ -1,4 +1,4 @@
-service: indy-ingest-api
+service: indy-ingest
 
 provider:
   name: aws
