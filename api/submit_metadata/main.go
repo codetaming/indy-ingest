@@ -58,7 +58,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	result := validator.Validate(schemaUrl, bodyJson)
 
 	if result.Valid {
-		_, metadataId, err := createMetadataRecord(submissionId, schemaUrl)
+		metadataRecord, metadataId, err := createMetadataRecord(submissionId, schemaUrl)
 		if err != nil {
 			errorMessage := model.ErrorMessage{Message: err.Error()}
 			jsonErrorMessage, _ := json.Marshal(errorMessage)
@@ -78,9 +78,14 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 				StatusCode: 500,
 			}, nil
 		}
+		metadataSuccessMessage := model.MetadataSuccessMessage{
+			Content: metadataRecord,
+			File: fileLocation,
+		}
+		jsonMetadataSuccessMessage, _ := json.Marshal(metadataSuccessMessage)
 		return events.APIGatewayProxyResponse{
 			Headers:    headers,
-			Body:       string(fileLocation),
+			Body:       string(jsonMetadataSuccessMessage),
 			StatusCode: 201,
 		}, nil
 	} else
