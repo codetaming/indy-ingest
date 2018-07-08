@@ -30,8 +30,18 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	log.Printf("Processing Lambda request %s\n", request.RequestContext.RequestID)
 
 	submissionId := request.PathParameters["id"]
+
+	if !checkSubmissionIdExists(submissionId) {
+		return events.APIGatewayProxyResponse{
+			Headers:    map[string]string{"Content-Type": "application/json"},
+			Body:       string(submissionId + " not found"),
+			StatusCode: 404,
+		}, nil
+	}
+
 	schemaUrl := request.Headers["describedBy"]
 	bodyJson := request.Body
+
 	result := validator.Validate(schemaUrl, bodyJson)
 	body, _ := json.Marshal(result)
 
@@ -50,6 +60,44 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 			StatusCode: 400,
 		}, nil
 	}
+}
+
+func checkSubmissionIdExists(submissionId string) bool {
+
+	var (
+		tableName = aws.String(os.Getenv("SUBMISSIONS_TABLE"))
+	)
+	result, err := ddb.GetItem(&dynamodb.GetItemInput{
+		TableName: tableName,
+		Key: map[string]*dynamodb.AttributeValue{
+			"submission_id": {
+				N: aws.String(submissionId),
+			},
+		},
+	})
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return false
+	}
+
+	type Item struct {
+		SubmissionId string `dynamodbav:"submission_id"`
+	}
+
+	item := Item{}
+
+	err = dynamodbattribute.UnmarshalMap(result.Item, &item)
+
+	if err != nil {
+		return false
+	}
+
+	if item.SubmissionId == "" {
+		return false
+	}
+
+	return true
 }
 
 func init() {
