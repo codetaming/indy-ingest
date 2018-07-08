@@ -127,14 +127,3 @@ resources:
       Properties:
         BucketName: ${self:provider.environment.METADATA_BUCKET}
         AccessControl: Private
-        CorsConfiguration:
-          CorsRules:
-          - AllowedMethods:
-            - GET
-            - PUT
-            - POST
-            - HEAD
-            AllowedOrigins:
-            - "*"
-            AllowedHeaders:
-            - "*"
