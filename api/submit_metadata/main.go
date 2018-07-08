@@ -102,7 +102,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 func createMetadataFile(submissionId string, metadataId string, bodyJson string) (fileLocation string, err error) {
 	key := submissionId + "/" + metadataId
 	contentType := "application/json"
-	fmt.Println("Uploading file to S3...")
+	log.Printf("Uploading file to S3: " + key)
 	upParams := &s3manager.UploadInput{
 		Bucket:      aws.String(os.Getenv("METADATA_BUCKET")),
 		ContentType: &contentType,
@@ -111,7 +111,7 @@ func createMetadataFile(submissionId string, metadataId string, bodyJson string)
 	}
 	result, err := s3Uploader.Upload(upParams)
 	if err != nil {
-		panic(fmt.Sprintf("failed to create S3 file, %v", err))
+		log.Panic(fmt.Sprintf("failed to create S3 file, %v", err))
 		return "", err
 	}
 	return result.Location, nil
