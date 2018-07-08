@@ -8,18 +8,16 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/satori/go.uuid"
 	"time"
-	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"os"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/codetaming/indy-ingest/api/model"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"strings"
+	"github.com/codetaming/indy-ingest/api/persistence"
 )
 
-var ddb *dynamodb.DynamoDB
 var s3Uploader *s3manager.Uploader
 
 func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
@@ -28,7 +26,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 
 	datasetId := request.PathParameters["id"]
 
-	exists, err := checkDatasetIdExists(datasetId)
+	exists, err := persistence.CheckDatasetIdExists(datasetId)
 
 	headers := map[string]string{"Content-Type": "application/json"}
 
@@ -117,42 +115,6 @@ func createMetadataFile(datasetId string, metadataId string, bodyJson string) (f
 	return result.Location, nil
 }
 
-func checkDatasetIdExists(datasetId string) (bool, error) {
-
-	var (
-		tableName = aws.String(os.Getenv("DATASET_TABLE"))
-	)
-	result, err := ddb.GetItem(&dynamodb.GetItemInput{
-		TableName: tableName,
-		Key: map[string]*dynamodb.AttributeValue{
-			"owner": {
-				S: aws.String(model.DefaultOwner),
-			},
-			"dataset_id": {
-				S: aws.String(datasetId),
-			},
-		},
-	})
-
-	if err != nil {
-		return false, err
-	}
-
-	dataset := model.Dataset{}
-
-	err = dynamodbattribute.UnmarshalMap(result.Item, &dataset)
-
-	if err != nil {
-		return false, err
-	}
-
-	if dataset.DatasetId == "" {
-		return false, nil
-	}
-
-	return true, nil
-}
-
 func init() {
 	region := os.Getenv("AWS_REGION")
 	if session, err := session.NewSession(&aws.Config{
@@ -160,7 +122,6 @@ func init() {
 	}); err != nil {
 		fmt.Println(fmt.Sprintf("Failed to connect to AWS: %s", err.Error()))
 	} else {
-		ddb = dynamodb.New(session)
 		s3Uploader = s3manager.NewUploader(session)
 	}
 }
@@ -171,29 +132,15 @@ func createMetadataRecord(datasetId string, schemaUrl string) (metadataRecord []
 	u := uuid.Must(uuid.NewV4()).String()
 	t := time.Now()
 
-	s := model.Metadata{
+	m := model.Metadata{
 		DatasetId:   datasetId,
 		MetadataId:  u,
 		DescribedBy: schemaUrl,
 		Created:     t,
 	}
-
-	av, err := dynamodbattribute.MarshalMap(s)
-	if err != nil {
-		panic(fmt.Sprintf("failed to DynamoDB marshal Record, %v", err))
-		return nil, "", err
-	}
-
-	var (
-		tableName = aws.String(os.Getenv("METADATA_TABLE"))
-	)
-
-	input := &dynamodb.PutItemInput{
-		Item:      av,
-		TableName: tableName,
-	}
-	if _, err := ddb.PutItem(input); err != nil {
-		body, _ := json.Marshal(s)
+	persistErr := persistence.PersistMetadata(m)
+	if persistErr != nil {
+		body, _ := json.Marshal(m)
 		return body, u, nil
 	} else {
 		return nil, "", err
