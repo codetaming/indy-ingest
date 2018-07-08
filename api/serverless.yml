@@ -4,7 +4,7 @@ provider:
   name: aws
   runtime: go1.x
   environment:
-    SUBMISSIONS_TABLE: "${self:service}-${opt:stage, self:provider.stage}-submissions"
+    SUBMISSIONS_TABLE: "${self:service}-${opt:stage, self:provider.stage}-dataset"
     METADATA_TABLE: "${self:service}-${opt:stage, self:provider.stage}-metadata"
     METADATA_BUCKET: "${self:service}-${opt:stage, self:provider.stage}-metadata"
   iamRoleStatements:
@@ -12,7 +12,7 @@ provider:
       Action:
         - dynamodb:GetItem
         - dynamodb:PutItem
-      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.SUBMISSIONS_TABLE}"
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DATASET_TABLE}"
     - Effect: Allow
       Action:
         - dynamodb:GetItem
@@ -31,23 +31,23 @@ package:
    - ./bin/**
 
 functions:
-  create-submission:
-    handler: bin/create_submission
+  create-dataset:
+    handler: bin/dataset
     events:
       - http:
-          path: submissions
+          path: dataset
           method: post
-  list-submissions:
+  list-datasets:
     handler: bin/dummy
     events:
       - http:
-          path: submissions
+          path: dataset
           method: get
-  get-submission:
+  get-dataset:
     handler: bin/dummy
     events:
       - http:
-          path: submissions/{id}
+          path: dataset/{id}
           method: get
           request:
             parameters:
@@ -57,7 +57,7 @@ functions:
     handler: bin/submit_metadata
     events:
       - http:
-          path: submissions/{id}/metadata
+          path: dataset/{id}/metadata
           method: post
           request:
             parameters:
@@ -67,7 +67,7 @@ functions:
     handler: bin/dummy
     events:
       - http:
-          path: submissions/{id}/metadata
+          path: dataset/{id}/metadata
           method: get
           request:
             parameters:
@@ -77,7 +77,7 @@ functions:
     handler: bin/dummy
     events:
       - http:
-          path: submissions/{id}/metadata/{uuid}
+          path: dataset/{id}/metadata/{uuid}
           method: get
           request:
             parameters:
@@ -93,19 +93,19 @@ functions:
 
 resources:
   Resources:
-    SubmissionsDynamoDbTable:
+    DatasetDynamoDbTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ${self:provider.environment.SUBMISSIONS_TABLE}
+        TableName: ${self:provider.environment.DATASET_TABLE}
         AttributeDefinitions:
           - AttributeName: owner
             AttributeType: S
-          - AttributeName: submission_id
+          - AttributeName: dataset_id
             AttributeType: S
         KeySchema:
           - AttributeName: owner
             KeyType: HASH
-          - AttributeName: submission_id
+          - AttributeName: dataset_id
             KeyType: RANGE
         ProvisionedThroughput:
           ReadCapacityUnits: 1
@@ -115,12 +115,12 @@ resources:
       Properties:
         TableName: ${self:provider.environment.METADATA_TABLE}
         AttributeDefinitions:
-          - AttributeName: submission_id
+          - AttributeName: dataset_id
             AttributeType: S
           - AttributeName: metadata_id
             AttributeType: S
         KeySchema:
-          - AttributeName: submission_id
+          - AttributeName: dataset_id
             KeyType: HASH
           - AttributeName: metadata_id
             KeyType: RANGE

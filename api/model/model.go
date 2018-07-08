@@ -2,17 +2,17 @@ package model
 
 import "time"
 
-type Submission struct {
-	Owner        string    `dynamodbav:"owner"`
-	SubmissionId string    `dynamodbav:"submission_id"`
-	Created      time.Time `dynamodbav:"created" type:"timestamp" timestampFormat:"unix"`
+type Dataset struct {
+	Owner     string    `dynamodbav:"owner"`
+	DatasetId string    `dynamodbav:"dataset_id"`
+	Created   time.Time `dynamodbav:"created" type:"timestamp" timestampFormat:"unix"`
 }
 
 type Metadata struct {
-	SubmissionId string    `dynamodbav:"submission_id"`
-	MetadataId   string    `dynamodbav:"metadata_id"`
-	DescribedBy  string    `dynamodbav:"described_by"`
-	Created      time.Time `dynamodbav:"created" type:"timestamp" timestampFormat:"unix"`
+	DatasetId   string    `dynamodbav:"dataset_id"`
+	MetadataId  string    `dynamodbav:"metadata_id"`
+	DescribedBy string    `dynamodbav:"described_by"`
+	Created     time.Time `dynamodbav:"created" type:"timestamp" timestampFormat:"unix"`
 }
 
 type ErrorMessage struct {

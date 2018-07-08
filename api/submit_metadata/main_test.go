@@ -56,7 +56,7 @@ func TestHandler(t *testing.T) {
     ],
     "describedBy": "https://schema.humancellatlas.org/type/biomaterial/5.1.0/specimen_from_organism"
 }`},
-			expectedMessage: "{\"SubmissionId\":\"12345\",\"MetadataId\":\"b74d1c3f-79e6-408a-9f40-a1c572bcb961\",\"DescribedBy\":\"https://schema.humancellatlas.org/type/biomaterial/5.1.0/specimen_from_organism\",\"Created\":\"2018-07-07T12:40:41.206641545+01:00\"}",
+			expectedMessage: "{\"DatasetId\":\"12345\",\"MetadataId\":\"b74d1c3f-79e6-408a-9f40-a1c572bcb961\",\"DescribedBy\":\"https://schema.humancellatlas.org/type/biomaterial/5.1.0/specimen_from_organism\",\"Created\":\"2018-07-07T12:40:41.206641545+01:00\"}",
 			expectedCode: 201,
 			err:    nil,
 		},

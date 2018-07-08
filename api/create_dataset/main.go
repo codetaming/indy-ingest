@@ -30,15 +30,15 @@ func init() {
 }
 
 func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	log.Println("Create Submission")
+	log.Println("Create Dataset")
 
 	u := uuid.Must(uuid.NewV4()).String()
 	t := time.Now()
 
-	s := model.Submission{
-		Owner:        model.DefaultOwner,
-		SubmissionId: u,
-		Created:      t,
+	s := model.Dataset{
+		Owner:     model.DefaultOwner,
+		DatasetId: u,
+		Created:   t,
 	}
 
 	av, err := dynamodbattribute.MarshalMap(s)
@@ -50,7 +50,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	}
 
 	var (
-		tableName = aws.String(os.Getenv("SUBMISSIONS_TABLE"))
+		tableName = aws.String(os.Getenv("DATASET_TABLE"))
 	)
 
 	input := &dynamodb.PutItemInput{

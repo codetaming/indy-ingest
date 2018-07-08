@@ -26,9 +26,9 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 
 	log.Printf("Processing Lambda request %s\n", request.RequestContext.RequestID)
 
-	submissionId := request.PathParameters["id"]
+	datasetId := request.PathParameters["id"]
 
-	exists, err := checkSubmissionIdExists(submissionId)
+	exists, err := checkDatasetIdExists(datasetId)
 
 	headers := map[string]string{"Content-Type": "application/json"}
 
@@ -43,7 +43,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	}
 
 	if !exists {
-		errorMessage := model.ErrorMessage{Message: submissionId + " not found"}
+		errorMessage := model.ErrorMessage{Message: datasetId + " not found"}
 		jsonErrorMessage, _ := json.Marshal(errorMessage)
 		return events.APIGatewayProxyResponse{
 			Headers:    headers,
@@ -58,7 +58,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	result := validator.Validate(schemaUrl, bodyJson)
 
 	if result.Valid {
-		metadataRecord, metadataId, err := createMetadataRecord(submissionId, schemaUrl)
+		metadataRecord, metadataId, err := createMetadataRecord(datasetId, schemaUrl)
 		if err != nil {
 			errorMessage := model.ErrorMessage{Message: err.Error()}
 			jsonErrorMessage, _ := json.Marshal(errorMessage)
@@ -68,7 +68,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 				StatusCode: 500,
 			}, nil
 		}
-		fileLocation, err := createMetadataFile(submissionId, metadataId, bodyJson)
+		fileLocation, err := createMetadataFile(datasetId, metadataId, bodyJson)
 		if err != nil {
 			errorMessage := model.ErrorMessage{Message: err.Error()}
 			jsonErrorMessage, _ := json.Marshal(errorMessage)
@@ -99,8 +99,8 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	}
 }
 
-func createMetadataFile(submissionId string, metadataId string, bodyJson string) (fileLocation string, err error) {
-	key := submissionId + "/" + metadataId
+func createMetadataFile(datasetId string, metadataId string, bodyJson string) (fileLocation string, err error) {
+	key := datasetId + "/" + metadataId
 	contentType := "application/json"
 	log.Printf("Uploading file to S3: " + key)
 	upParams := &s3manager.UploadInput{
@@ -117,10 +117,10 @@ func createMetadataFile(submissionId string, metadataId string, bodyJson string)
 	return result.Location, nil
 }
 
-func checkSubmissionIdExists(submissionId string) (bool, error) {
+func checkDatasetIdExists(datasetId string) (bool, error) {
 
 	var (
-		tableName = aws.String(os.Getenv("SUBMISSIONS_TABLE"))
+		tableName = aws.String(os.Getenv("DATASET_TABLE"))
 	)
 	result, err := ddb.GetItem(&dynamodb.GetItemInput{
 		TableName: tableName,
@@ -128,8 +128,8 @@ func checkSubmissionIdExists(submissionId string) (bool, error) {
 			"owner": {
 				S: aws.String(model.DefaultOwner),
 			},
-			"submission_id": {
-				S: aws.String(submissionId),
+			"dataset_id": {
+				S: aws.String(datasetId),
 			},
 		},
 	})
@@ -138,15 +138,15 @@ func checkSubmissionIdExists(submissionId string) (bool, error) {
 		return false, err
 	}
 
-	submission := model.Submission{}
+	dataset := model.Dataset{}
 
-	err = dynamodbattribute.UnmarshalMap(result.Item, &submission)
+	err = dynamodbattribute.UnmarshalMap(result.Item, &dataset)
 
 	if err != nil {
 		return false, err
 	}
 
-	if submission.SubmissionId == "" {
+	if dataset.DatasetId == "" {
 		return false, nil
 	}
 
@@ -165,17 +165,17 @@ func init() {
 	}
 }
 
-func createMetadataRecord(submissionId string, schemaUrl string) (metadataRecord []byte, metadataId string, err error) {
+func createMetadataRecord(datasetId string, schemaUrl string) (metadataRecord []byte, metadataId string, err error) {
 	log.Println("Create Metadata")
 
 	u := uuid.Must(uuid.NewV4()).String()
 	t := time.Now()
 
 	s := model.Metadata{
-		SubmissionId: submissionId,
-		MetadataId:   u,
-		DescribedBy:  schemaUrl,
-		Created:      t,
+		DatasetId:   datasetId,
+		MetadataId:  u,
+		DescribedBy: schemaUrl,
+		Created:     t,
 	}
 
 	av, err := dynamodbattribute.MarshalMap(s)
