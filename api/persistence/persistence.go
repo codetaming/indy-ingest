@@ -4,11 +4,11 @@ import (
 	"github.com/codetaming/indy-ingest/api/model"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"fmt"
-	"log"
 	"github.com/aws/aws-sdk-go/aws"
 	"os"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"log"
 )
 
 var ddb *dynamodb.DynamoDB
@@ -18,7 +18,7 @@ func init() {
 	if session, err := session.NewSession(&aws.Config{
 		Region: &region,
 	}); err != nil {
-		fmt.Println(fmt.Sprintf("Failed to connect to AWS: %s", err.Error()))
+		log.Println(fmt.Sprintf("Failed to connect to AWS: %s", err.Error()))
 	} else {
 		ddb = dynamodb.New(session)
 	}
@@ -27,14 +27,11 @@ func init() {
 func PersistDataset(dataset model.Dataset) (err error) {
 	av, err := dynamodbattribute.MarshalMap(dataset)
 	if err != nil {
-		panic(fmt.Sprintf("failed to DynamoDB marshal Record, %v", err))
+		log.Panic(fmt.Sprintf("failed to DynamoDB marshal Record, %v", err))
 	}
-	for key, value := range av {
-		log.Println("Key:", key, "Value:", value)
-	}
-	var (
-		tableName = aws.String(os.Getenv("DATASET_TABLE"))
-	)
+
+	tableName := aws.String(os.Getenv("DATASET_TABLE"))
+
 	input := &dynamodb.PutItemInput{
 		Item:      av,
 		TableName: tableName,
@@ -48,13 +45,11 @@ func PersistDataset(dataset model.Dataset) (err error) {
 func PersistMetadata(metadata model.Metadata) (err error) {
 	av, err := dynamodbattribute.MarshalMap(metadata)
 	if err != nil {
-		panic(fmt.Sprintf("failed to DynamoDB marshal Record, %v", err))
+		log.Panic(fmt.Sprintf("failed to DynamoDB marshal Record, %v", err))
 		return err
 	}
 
-	var (
-		tableName = aws.String(os.Getenv("METADATA_TABLE"))
-	)
+	tableName := aws.String(os.Getenv("METADATA_TABLE"))
 
 	input := &dynamodb.PutItemInput{
 		Item:      av,

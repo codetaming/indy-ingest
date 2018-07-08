@@ -126,7 +126,7 @@ func init() {
 	}
 }
 
-func createMetadataRecord(datasetId string, schemaUrl string) (metadataRecord []byte, metadataId string, err error) {
+func createMetadataRecord(datasetId string, schemaUrl string) (metadataRecord model.Metadata, metadataId string, err error) {
 	log.Println("Create Metadata")
 
 	u := uuid.Must(uuid.NewV4()).String()
@@ -140,10 +140,9 @@ func createMetadataRecord(datasetId string, schemaUrl string) (metadataRecord []
 	}
 	persistErr := persistence.PersistMetadata(m)
 	if persistErr != nil {
-		body, _ := json.Marshal(m)
-		return body, u, nil
+		return m, u, nil
 	} else {
-		return nil, "", err
+		return m, "", err
 	}
 }
 
