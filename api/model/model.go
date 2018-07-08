@@ -16,7 +16,7 @@ type Metadata struct {
 }
 
 type ErrorMessage struct {
-	Message string
+	Message string `json:"message"`
 }
 
 var DefaultOwner = "dan"
