@@ -4,7 +4,7 @@ provider:
   name: aws
   runtime: go1.x
   environment:
-    SUBMISSIONS_TABLE: "${self:service}-${opt:stage, self:provider.stage}-dataset"
+    DATASET_TABLE: "${self:service}-${opt:stage, self:provider.stage}-dataset"
     METADATA_TABLE: "${self:service}-${opt:stage, self:provider.stage}-metadata"
     METADATA_BUCKET: "${self:service}-${opt:stage, self:provider.stage}-metadata"
   iamRoleStatements:
@@ -53,8 +53,8 @@ functions:
             parameters:
               paths:
               id: true
-  create-metadata:
-    handler: bin/submit_metadata
+  add-metadata:
+    handler: bin/add_metadata
     events:
       - http:
           path: dataset/{id}/metadata

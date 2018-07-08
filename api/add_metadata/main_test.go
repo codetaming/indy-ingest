@@ -5,7 +5,7 @@ import (
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/stretchr/testify/assert"
-	"github.com/codetaming/indy-ingest/api/submit_metadata"
+	"github.com/codetaming/indy-ingest/api/add_metadata"
 )
 
 func TestHandler(t *testing.T) {
