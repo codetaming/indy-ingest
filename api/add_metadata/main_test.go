@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/aws/aws-lambda-go/events"
-	"github.com/stretchr/testify/assert"
 	"github.com/codetaming/indy-ingest/api/add_metadata"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestHandler(t *testing.T) {
@@ -19,10 +19,10 @@ func TestHandler(t *testing.T) {
 	}
 
 	tests := []struct {
-		request events.APIGatewayProxyRequest
+		request         events.APIGatewayProxyRequest
 		expectedMessage string
-		expectedCode int
-		err     error
+		expectedCode    int
+		err             error
 	}{
 		{
 			// Test that the handler responds with the correct response
@@ -30,7 +30,7 @@ func TestHandler(t *testing.T) {
 
 			request: events.APIGatewayProxyRequest{
 				PathParameters: pathParameters,
-				Headers: headers,
+				Headers:        headers,
 				Body: `{
     "organ": {
         "text": "brain",
@@ -57,16 +57,16 @@ func TestHandler(t *testing.T) {
     "describedBy": "https://schema.humancellatlas.org/type/biomaterial/5.1.0/specimen_from_organism"
 }`},
 			expectedMessage: "{\"info\":{\"dataset_id\":\"12345\",\"metadata_id\":\".+\",\"described_by\":\"https://schema.humancellatlas.org/type/biomaterial/5.1.0/specimen_from_organism\",\"created\":\".+\"},\"file\":\"12345/\"}",
-			expectedCode: 201,
-			err:    nil,
+			expectedCode:    201,
+			err:             nil,
 		},
 		{
 			request: events.APIGatewayProxyRequest{
 				Headers: headers,
 				Body:    "{}"},
 			expectedMessage: "{\"valid\":false,\"message\":\".+\",\"errors\":[\"describedBy is required\",\"schema_type is required\",\"biomaterial_core is required\",\"organ is required\"]}",
-			expectedCode: 400,
-			err:    nil,
+			expectedCode:    400,
+			err:             nil,
 		},
 	}
 
@@ -76,4 +76,3 @@ func TestHandler(t *testing.T) {
 		assert.Equal(t, test.expectedCode, response.StatusCode)
 	}
 }
-

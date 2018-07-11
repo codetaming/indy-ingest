@@ -1,13 +1,13 @@
 package main
 
 import (
-	"github.com/aws/aws-lambda-go/events"
 	"encoding/json"
+	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/codetaming/indy-ingest/api/model"
-	"time"
 	"github.com/codetaming/indy-ingest/api/persistence"
 	"github.com/google/uuid"
+	"time"
 )
 
 func Handler(_ events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {

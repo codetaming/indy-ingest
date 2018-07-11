@@ -1,16 +1,16 @@
 package main
 
 import (
-	"github.com/aws/aws-lambda-go/events"
-	"log"
-	"github.com/codetaming/indy-ingest/api/validator"
 	"encoding/json"
+	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
-	"time"
 	"github.com/codetaming/indy-ingest/api/model"
 	"github.com/codetaming/indy-ingest/api/persistence"
 	"github.com/codetaming/indy-ingest/api/storage"
+	"github.com/codetaming/indy-ingest/api/validator"
 	"github.com/google/uuid"
+	"log"
+	"time"
 )
 
 func MockHandler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
@@ -90,8 +90,7 @@ func do(request events.APIGatewayProxyRequest, dec persistence.DatasetExistenceC
 			Body:       string(jsonMetadataSuccessMessage),
 			StatusCode: 201,
 		}, nil
-	} else
-	{
+	} else {
 		validationResultJson, _ := json.Marshal(result)
 		return events.APIGatewayProxyResponse{
 			Headers:    headers,

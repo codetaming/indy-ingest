@@ -1,14 +1,14 @@
 package persistence
 
 import (
-	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"os"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/aws"
-	"log"
 	"fmt"
-	"github.com/codetaming/indy-ingest/api/model"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
+	"github.com/codetaming/indy-ingest/api/model"
+	"log"
+	"os"
 )
 
 type DynamoPersistence struct{}
@@ -97,5 +97,3 @@ func (DynamoPersistence) CheckDatasetIdExists(datasetId string) (bool, error) {
 
 	return true, nil
 }
-
-

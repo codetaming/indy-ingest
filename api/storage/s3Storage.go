@@ -1,13 +1,13 @@
 package storage
 
 import (
-	"github.com/aws/aws-sdk-go/service/s3/s3manager"
-	"os"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/aws"
 	"fmt"
-	"strings"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"log"
+	"os"
+	"strings"
 )
 
 type S3Storage struct{}

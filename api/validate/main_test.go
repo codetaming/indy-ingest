@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/aws/aws-lambda-go/events"
-	"github.com/stretchr/testify/assert"
 	"github.com/codetaming/indy-ingest/api/validate"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestHandler(t *testing.T) {

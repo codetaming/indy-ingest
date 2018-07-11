@@ -5,8 +5,8 @@ import (
 
 	"github.com/codetaming/indy-ingest/api/create_dataset"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/aws/aws-lambda-go/events"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestHandler(t *testing.T) {

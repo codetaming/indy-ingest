@@ -1,11 +1,11 @@
 package validator
 
 import (
-	"github.com/xeipuuv/gojsonschema"
 	"github.com/codetaming/indy-ingest/api/model"
+	"github.com/xeipuuv/gojsonschema"
 )
 
-func Validate(schemaUrl string, bodyJson string) (model.ValidationResult) {
+func Validate(schemaUrl string, bodyJson string) model.ValidationResult {
 
 	schemaLoader := gojsonschema.NewReferenceLoader(schemaUrl)
 	documentLoader := gojsonschema.NewStringLoader(bodyJson)

@@ -1,12 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
-	"log"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/codetaming/indy-ingest/api/validator"
-	"encoding/json"
+	"log"
 )
 
 var (
