@@ -9,7 +9,7 @@ type DatasetPersister interface {
 }
 
 type MetadataPersister interface {
-	PersistMetadata(metadata model.Metadata)
+	PersistMetadata(metadata model.Metadata) (err error)
 }
 
 type DatasetExistenceChecker interface {

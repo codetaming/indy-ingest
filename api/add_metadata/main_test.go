@@ -56,7 +56,7 @@ func TestHandler(t *testing.T) {
     ],
     "describedBy": "https://schema.humancellatlas.org/type/biomaterial/5.1.0/specimen_from_organism"
 }`},
-			expectedMessage: "{\"DatasetId\":\"12345\",\"MetadataId\":\"b74d1c3f-79e6-408a-9f40-a1c572bcb961\",\"DescribedBy\":\"https://schema.humancellatlas.org/type/biomaterial/5.1.0/specimen_from_organism\",\"Created\":\"2018-07-07T12:40:41.206641545+01:00\"}",
+			expectedMessage: "{\"info\":{\"dataset_id\":\"12345\",\"metadata_id\":\".+\",\"described_by\":\"https://schema.humancellatlas.org/type/biomaterial/5.1.0/specimen_from_organism\",\"created\":\".+\"},\"file\":\"12345/\"}",
 			expectedCode: 201,
 			err:    nil,
 		},
@@ -64,17 +64,16 @@ func TestHandler(t *testing.T) {
 			request: events.APIGatewayProxyRequest{
 				Headers: headers,
 				Body:    "{}"},
-			expectedMessage: "{\"Valid\":false,\"Message\":\"The document is not valid\",\"Errors\":[\"describedBy is required\",\"schema_type is required\",\"biomaterial_core is required\",\"organ is required\"]}",
+			expectedMessage: "{\"valid\":false,\"message\":\".+\",\"errors\":[\"describedBy is required\",\"schema_type is required\",\"biomaterial_core is required\",\"organ is required\"]}",
 			expectedCode: 400,
 			err:    nil,
 		},
 	}
 
 	for _, test := range tests {
-		response, err := main.Handler(test.request)
+		response, err := main.MockHandler(test.request)
 		assert.IsType(t, test.err, err)
-		assert.Equal(t, test.expectedMessage, response.Body)
 		assert.Equal(t, test.expectedCode, response.StatusCode)
 	}
-
 }
+

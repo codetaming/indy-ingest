@@ -8,28 +8,32 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/satori/go.uuid"
 	"time"
-	"fmt"
-	"github.com/aws/aws-sdk-go/aws"
-	"os"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/codetaming/indy-ingest/api/model"
-	"github.com/aws/aws-sdk-go/service/s3/s3manager"
-	"strings"
 	"github.com/codetaming/indy-ingest/api/persistence"
+	"github.com/codetaming/indy-ingest/api/storage"
 )
 
-var s3Uploader *s3manager.Uploader
+func MockHandler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	p := new(persistence.MockPersistence)
+	s := new(storage.MockStorage)
+	return do(request, p, p, s)
+}
 
 func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	p := new(persistence.DynamoPersistence)
+	s := new(storage.S3Storage)
+	return do(request, p, p, s)
+}
 
-	log.Printf("Processing Lambda request %s\n", request.RequestContext.RequestID)
+func checkDatasetExists(datasetId string, p persistence.DatasetExistenceChecker) (bool, error) {
+	return p.CheckDatasetIdExists(datasetId)
+}
 
+func do(request events.APIGatewayProxyRequest, dec persistence.DatasetExistenceChecker, mp persistence.MetadataPersister, ms storage.MetadataStorer) (events.APIGatewayProxyResponse, error) {
 	datasetId := request.PathParameters["id"]
-
-	exists, err := persistence.CheckDatasetIdExists(datasetId)
+	exists, err := checkDatasetExists(datasetId, dec)
 
 	headers := map[string]string{"Content-Type": "application/json"}
-
 	if err != nil {
 		errorMessage := model.ErrorMessage{Message: err.Error()}
 		jsonErrorMessage, _ := json.Marshal(errorMessage)
@@ -56,7 +60,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	result := validator.Validate(schemaUrl, bodyJson)
 
 	if result.Valid {
-		metadataRecord, metadataId, err := createMetadataRecord(datasetId, schemaUrl)
+		metadataRecord, metadataId, err := createMetadataRecord(datasetId, schemaUrl, mp)
 		if err != nil {
 			errorMessage := model.ErrorMessage{Message: err.Error()}
 			jsonErrorMessage, _ := json.Marshal(errorMessage)
@@ -66,7 +70,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 				StatusCode: 500,
 			}, nil
 		}
-		fileLocation, err := createMetadataFile(datasetId, metadataId, bodyJson)
+		fileLocation, err := createMetadataFile(datasetId, metadataId, bodyJson, ms)
 		if err != nil {
 			errorMessage := model.ErrorMessage{Message: err.Error()}
 			jsonErrorMessage, _ := json.Marshal(errorMessage)
@@ -97,36 +101,12 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	}
 }
 
-func createMetadataFile(datasetId string, metadataId string, bodyJson string) (fileLocation string, err error) {
+func createMetadataFile(datasetId string, metadataId string, bodyJson string, ms storage.MetadataStorer) (fileLocation string, err error) {
 	key := datasetId + "/" + metadataId
-	contentType := "application/json"
-	log.Printf("Uploading file to S3: " + key)
-	upParams := &s3manager.UploadInput{
-		Bucket:      aws.String(os.Getenv("METADATA_BUCKET")),
-		ContentType: &contentType,
-		Key:         &key,
-		Body:        strings.NewReader(bodyJson),
-	}
-	result, err := s3Uploader.Upload(upParams)
-	if err != nil {
-		log.Panic(fmt.Sprintf("failed to create S3 file, %v", err))
-		return "", err
-	}
-	return result.Location, nil
+	return ms.StoreMetadata(key, bodyJson)
 }
 
-func init() {
-	region := os.Getenv("AWS_REGION")
-	if ses, err := session.NewSession(&aws.Config{
-		Region: &region,
-	}); err != nil {
-		fmt.Println(fmt.Sprintf("Failed to connect to AWS: %s", err.Error()))
-	} else {
-		s3Uploader = s3manager.NewUploader(ses)
-	}
-}
-
-func createMetadataRecord(datasetId string, schemaUrl string) (metadataRecord model.Metadata, metadataId string, err error) {
+func createMetadataRecord(datasetId string, schemaUrl string, mp persistence.MetadataPersister) (metadataRecord model.Metadata, metadataId string, err error) {
 	log.Println("Create Metadata")
 
 	u := uuid.Must(uuid.NewV4()).String()
@@ -138,7 +118,7 @@ func createMetadataRecord(datasetId string, schemaUrl string) (metadataRecord mo
 		DescribedBy: schemaUrl,
 		Created:     t,
 	}
-	persistErr := persistence.PersistMetadata(m)
+	persistErr := mp.PersistMetadata(m)
 	if persistErr != nil {
 		return m, u, nil
 	} else {
