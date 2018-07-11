@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/aws/aws-lambda-go/events"
-	"log"
 	"encoding/json"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/satori/go.uuid"
@@ -12,18 +11,23 @@ import (
 )
 
 func Handler(_ events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	log.Println("Create Dataset")
+	return respond(createDataSet(new(persistence.DynamoPersistence)))
+}
 
-	u := uuid.Must(uuid.NewV4()).String()
-	t := time.Now()
+func MockHandler(_ events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	return respond(createDataSet(new(persistence.MockPersistence)))
+}
 
+func createDataSet(p persistence.DatasetPersister) (model.Dataset, error) {
 	d := model.Dataset{
 		Owner:     model.DefaultOwner,
-		DatasetId: u,
-		Created:   t,
+		DatasetId: uuid.Must(uuid.NewV4()).String(),
+		Created:   time.Now(),
 	}
+	return d, p.PersistDataset(d)
+}
 
-	err := persistence.PersistDataset(d)
+func respond(d model.Dataset, err error) (events.APIGatewayProxyResponse, error) {
 	if err != nil {
 		return events.APIGatewayProxyResponse{
 			Body:       err.Error(),
