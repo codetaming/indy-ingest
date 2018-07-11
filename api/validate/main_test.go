@@ -50,14 +50,14 @@ func TestHandler(t *testing.T) {
     ],
     "describedBy": "https://schema.humancellatlas.org/type/biomaterial/5.1.0/specimen_from_organism"
 }`},
-			expect: "{\"Valid\":true,\"Message\":\"The document is valid\",\"Errors\":null}",
+			expect: "{\"valid\":true,\"message\":\"The document is valid\",\"errors\":null}",
 			err:    nil,
 		},
 		{
 			request: events.APIGatewayProxyRequest{
 				Headers: headers,
 				Body:    "{}"},
-			expect: "{\"Valid\":false,\"Message\":\"The document is not valid\",\"Errors\":[\"describedBy is required\",\"schema_type is required\",\"biomaterial_core is required\",\"organ is required\"]}",
+			expect: "{\"valid\":false,\"message\":\"The document is not valid\",\"errors\":[\"describedBy is required\",\"schema_type is required\",\"biomaterial_core is required\",\"organ is required\"]}",
 			err:    nil,
 		},
 	}
