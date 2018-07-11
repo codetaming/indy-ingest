@@ -14,5 +14,5 @@
 [6]: https://travis-ci.org/codetaming/indy-ingest
 [7]: https://codecov.io/gh/codetaming/indy-ingest/branch/master/graph/badge.svg
 [8]: https://codecov.io/gh/codetaming/indy-ingest
-[9]: https://api.codacy.com/project/badge/Grade/b600375020d745f087cf93b46c7bd395
-[10]: https://www.codacy.com/app/danielvaughan/indy-ingestutm_source=github.com&amp;utm_medium=referral&amp;utm_content=codetaming/indy-ingest&amp;utm_campaign=Badge_Grade
+[9]: https://api.codacy.com/project/badge/Grade/b75a9233c6064ba4a61c70e44fbaae26
+[10]: https://www.codacy.com/app/danielvaughan/indy-ingest?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=codetaming/indy-ingest&amp;utm_campaign=Badge_Grade
