@@ -6,11 +6,11 @@ import (
 	"github.com/codetaming/indy-ingest/api/validator"
 	"encoding/json"
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/satori/go.uuid"
 	"time"
 	"github.com/codetaming/indy-ingest/api/model"
 	"github.com/codetaming/indy-ingest/api/persistence"
 	"github.com/codetaming/indy-ingest/api/storage"
+	"github.com/google/uuid"
 )
 
 func MockHandler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
@@ -109,7 +109,7 @@ func createMetadataFile(datasetId string, metadataId string, bodyJson string, ms
 func createMetadataRecord(datasetId string, schemaUrl string, mp persistence.MetadataPersister) (metadataRecord model.Metadata, metadataId string, err error) {
 	log.Println("Create Metadata")
 
-	u := uuid.Must(uuid.NewV4()).String()
+	u := uuid.Must(uuid.NewUUID()).String()
 	t := time.Now()
 
 	m := model.Metadata{
