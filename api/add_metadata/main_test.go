@@ -5,29 +5,49 @@ import (
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/codetaming/indy-ingest/api/add_metadata"
+	"github.com/codetaming/indy-ingest/api/persistence"
+	"github.com/codetaming/indy-ingest/api/storage"
 	"github.com/stretchr/testify/assert"
 )
 
+type testDefinition struct {
+	request         events.APIGatewayProxyRequest
+	expectedMessage string
+	expectedCode    int
+	err             error
+}
+
+var headers = map[string]string{
+	"describedBy": "https://schema.humancellatlas.org/type/biomaterial/5.1.0/specimen_from_organism",
+}
+
+var pathParameters = map[string]string{
+	"id": "12345",
+}
+
+func TestErroredHandler(t *testing.T) {
+	tests := []testDefinition{
+		{
+			request: events.APIGatewayProxyRequest{
+				PathParameters: pathParameters,
+				Headers:        headers,
+				Body:           ``},
+			expectedMessage: "",
+			expectedCode:    500,
+			err:             nil,
+		},
+	}
+	for _, test := range tests {
+		response, err := ErroredHandler(test.request)
+		assert.IsType(t, test.err, err)
+		assert.Equal(t, test.expectedCode, response.StatusCode)
+	}
+}
+
 func TestHandler(t *testing.T) {
 
-	headers := map[string]string{
-		"describedBy": "https://schema.humancellatlas.org/type/biomaterial/5.1.0/specimen_from_organism",
-	}
-
-	pathParameters := map[string]string{
-		"id": "12345",
-	}
-
-	tests := []struct {
-		request         events.APIGatewayProxyRequest
-		expectedMessage string
-		expectedCode    int
-		err             error
-	}{
+	tests := []testDefinition{
 		{
-			// Test that the handler responds with the correct response
-			// when a valid name is provided in the HTTP body
-
 			request: events.APIGatewayProxyRequest{
 				PathParameters: pathParameters,
 				Headers:        headers,
@@ -71,8 +91,20 @@ func TestHandler(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		response, err := main.MockHandler(test.request)
+		response, err := MockHandler(test.request)
 		assert.IsType(t, test.err, err)
 		assert.Equal(t, test.expectedCode, response.StatusCode)
 	}
+}
+
+func ErroredHandler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	p := new(persistence.ErroredPersistence)
+	s := new(storage.MockStorage)
+	return main.Do(request, p, p, s)
+}
+
+func MockHandler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	p := new(persistence.MockPersistence)
+	s := new(storage.MockStorage)
+	return main.Do(request, p, p, s)
 }

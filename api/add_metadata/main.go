@@ -9,27 +9,16 @@ import (
 	"github.com/codetaming/indy-ingest/api/storage"
 	"github.com/codetaming/indy-ingest/api/validator"
 	"github.com/google/uuid"
-	"log"
 	"time"
 )
-
-func MockHandler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	p := new(persistence.MockPersistence)
-	s := new(storage.MockStorage)
-	return do(request, p, p, s)
-}
 
 func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	p := new(persistence.DynamoPersistence)
 	s := new(storage.S3Storage)
-	return do(request, p, p, s)
+	return Do(request, p, p, s)
 }
 
-func checkDatasetExists(datasetId string, p persistence.DatasetExistenceChecker) (bool, error) {
-	return p.CheckDatasetIdExists(datasetId)
-}
-
-func do(request events.APIGatewayProxyRequest, dec persistence.DatasetExistenceChecker, mp persistence.MetadataPersister, ms storage.MetadataStorer) (events.APIGatewayProxyResponse, error) {
+func Do(request events.APIGatewayProxyRequest, dec persistence.DatasetExistenceChecker, mp persistence.MetadataPersister, ms storage.MetadataStorer) (events.APIGatewayProxyResponse, error) {
 	datasetId := request.PathParameters["id"]
 	exists, err := checkDatasetExists(datasetId, dec)
 
@@ -100,28 +89,28 @@ func do(request events.APIGatewayProxyRequest, dec persistence.DatasetExistenceC
 	}
 }
 
+func checkDatasetExists(datasetId string, p persistence.DatasetExistenceChecker) (bool, error) {
+	return p.CheckDatasetIdExists(datasetId)
+}
+
 func createMetadataFile(datasetId string, metadataId string, bodyJson string, ms storage.MetadataStorer) (fileLocation string, err error) {
 	key := datasetId + "/" + metadataId
 	return ms.StoreMetadata(key, bodyJson)
 }
 
 func createMetadataRecord(datasetId string, schemaUrl string, mp persistence.MetadataPersister) (metadataRecord model.Metadata, metadataId string, err error) {
-	log.Println("Create Metadata")
-
-	u := uuid.Must(uuid.NewUUID()).String()
-	t := time.Now()
-
+	uuid := uuid.Must(uuid.NewUUID()).String()
 	m := model.Metadata{
 		DatasetId:   datasetId,
-		MetadataId:  u,
+		MetadataId:  uuid,
 		DescribedBy: schemaUrl,
-		Created:     t,
+		Created:     time.Now(),
 	}
 	persistErr := mp.PersistMetadata(m)
 	if persistErr != nil {
-		return m, u, nil
+		return m, uuid, nil
 	} else {
-		return m, "", err
+		return m, "", persistErr
 	}
 }
 

@@ -11,11 +11,11 @@ import (
 )
 
 func Handler(_ events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	return respond(createDataSet(new(persistence.DynamoPersistence)))
+	return Do(new(persistence.DynamoPersistence))
 }
 
-func MockHandler(_ events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	return respond(createDataSet(new(persistence.MockPersistence)))
+func Do(p persistence.DatasetPersister) (events.APIGatewayProxyResponse, error) {
+	return respond(createDataSet(p))
 }
 
 func createDataSet(p persistence.DatasetPersister) (model.Dataset, error) {
