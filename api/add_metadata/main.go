@@ -12,12 +12,14 @@ import (
 	"time"
 )
 
+//AWS Lambda entry point
 func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	p := new(persistence.DynamoPersistence)
 	s := new(storage.S3Storage)
 	return Do(request, p, p, s)
 }
 
+//Do executes the function allowing dependencies to be specified
 func Do(request events.APIGatewayProxyRequest, dec persistence.DatasetExistenceChecker, mp persistence.MetadataPersister, ms storage.MetadataStorer) (events.APIGatewayProxyResponse, error) {
 	datasetId := request.PathParameters["id"]
 	exists, err := checkDatasetExists(datasetId, dec)
@@ -98,10 +100,10 @@ func createMetadataFile(datasetId string, metadataId string, bodyJson string, ms
 	return ms.StoreMetadata(key, bodyJson)
 }
 
-func createMetadataRecord(datasetId string, schemaUrl string, mp persistence.MetadataPersister) (metadataRecord model.Metadata, metadataId string, err error) {
+func createMetadataRecord(datasetID string, schemaUrl string, mp persistence.MetadataPersister) (metadataRecord model.Metadata, metadataId string, err error) {
 	uuid := uuid.Must(uuid.NewUUID()).String()
 	m := model.Metadata{
-		DatasetId:   datasetId,
+		DatasetId:   datasetID,
 		MetadataId:  uuid,
 		DescribedBy: schemaUrl,
 		Created:     time.Now(),

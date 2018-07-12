@@ -10,10 +10,12 @@ import (
 	"time"
 )
 
+//AWS Lambda entry point
 func Handler(_ events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	return Do(new(persistence.DynamoPersistence))
 }
 
+//Do executes the function allowing dependencies to be specified
 func Do(p persistence.DatasetPersister) (events.APIGatewayProxyResponse, error) {
 	return respond(createDataSet(p))
 }
