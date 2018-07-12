@@ -35,13 +35,12 @@ func respond(d model.Dataset, err error) (events.APIGatewayProxyResponse, error)
 			Body:       err.Error(),
 			StatusCode: 500,
 		}, nil
-	} else {
-		body, _ := json.Marshal(d)
-		return events.APIGatewayProxyResponse{
-			Body:       string(body),
-			StatusCode: 200,
-		}, nil
 	}
+	body, _ := json.Marshal(d)
+	return events.APIGatewayProxyResponse{
+		Body:       string(body),
+		StatusCode: 200,
+	}, nil
 }
 
 func main() {

@@ -81,14 +81,13 @@ func Do(request events.APIGatewayProxyRequest, dec persistence.DatasetExistenceC
 			Body:       string(jsonMetadataSuccessMessage),
 			StatusCode: 201,
 		}, nil
-	} else {
-		validationResultJson, _ := json.Marshal(result)
-		return events.APIGatewayProxyResponse{
-			Headers:    headers,
-			Body:       string(validationResultJson),
-			StatusCode: 400,
-		}, nil
 	}
+	validationResultJson, _ := json.Marshal(result)
+	return events.APIGatewayProxyResponse{
+		Headers:    headers,
+		Body:       string(validationResultJson),
+		StatusCode: 400,
+	}, nil
 }
 
 func checkDatasetExists(datasetId string, p persistence.DatasetExistenceChecker) (bool, error) {
