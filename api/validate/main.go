@@ -15,8 +15,7 @@ var (
 )
 
 func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-
-	log.Printf("Processing Lambda request %s\n", request.RequestContext.RequestID)
+	log.Print(request)
 
 	headers := map[string]string{"Content-Type": "application/json"}
 
