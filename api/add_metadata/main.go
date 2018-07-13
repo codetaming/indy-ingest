@@ -48,7 +48,17 @@ func Do(request events.APIGatewayProxyRequest, dec persistence.DatasetExistenceC
 	schemaUrl := request.Headers["describedBy"]
 	bodyJson := request.Body
 
-	result := validator.Validate(schemaUrl, bodyJson)
+	result, err := validator.Validate(schemaUrl, bodyJson)
+
+	if err != nil {
+		errorMessage := model.ErrorMessage{Message: err.Error()}
+		jsonErrorMessage, _ := json.Marshal(errorMessage)
+		return events.APIGatewayProxyResponse{
+			Headers:    headers,
+			Body:       string(jsonErrorMessage),
+			StatusCode: 500,
+		}, nil
+	}
 
 	if result.Valid {
 		metadataRecord, metadataId, err := createMetadataRecord(datasetId, schemaUrl, mp)

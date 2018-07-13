@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/codetaming/indy-ingest/api/model"
 	"github.com/codetaming/indy-ingest/api/validator"
 	"log"
 )
@@ -17,17 +18,29 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 
 	log.Printf("Processing Lambda request %s\n", request.RequestContext.RequestID)
 
+	headers := map[string]string{"Content-Type": "application/json"}
+
 	if len(request.Body) < 1 {
 		return events.APIGatewayProxyResponse{}, ErrMetadataNotProvided
 	}
 
 	schemaUrl := request.Headers["describedBy"]
 	bodyJson := request.Body
-	result := validator.Validate(schemaUrl, bodyJson)
-	body, _ := json.Marshal(result)
+	result, _ := validator.Validate(schemaUrl, bodyJson)
+	body, err := json.Marshal(result)
+
+	if err != nil {
+		errorMessage := model.ErrorMessage{Message: err.Error()}
+		jsonErrorMessage, _ := json.Marshal(errorMessage)
+		return events.APIGatewayProxyResponse{
+			Headers:    headers,
+			Body:       string(jsonErrorMessage),
+			StatusCode: 500,
+		}, nil
+	}
 
 	return events.APIGatewayProxyResponse{
-		Headers:    map[string]string{"Content-Type": "application/json"},
+		Headers:    headers,
 		Body:       string(body),
 		StatusCode: 200,
 	}, nil
