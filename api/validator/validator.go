@@ -26,21 +26,21 @@ func Validate(schemaUrl string, bodyJson string) (model.ValidationResult, error)
 	}
 
 	var message string
-	var errors []string
+	var validationErrors []string
 
 	if result.Valid() {
 		message = "The document is valid"
 	} else {
 		message = "The document is not valid"
 		for _, desc := range result.Errors() {
-			errors = append(errors, desc.Description())
+			validationErrors = append(validationErrors, desc.Description())
 		}
 	}
 
 	vr := model.ValidationResult{
 		Valid:   result.Valid(),
 		Message: message,
-		Errors:  errors,
+		Errors:  validationErrors,
 	}
 
 	return vr, nil

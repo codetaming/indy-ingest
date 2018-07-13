@@ -110,16 +110,16 @@ func createMetadataFile(datasetId string, metadataId string, bodyJson string, ms
 }
 
 func createMetadataRecord(datasetID string, schemaUrl string, mp persistence.MetadataPersister) (metadataRecord model.Metadata, metadataId string, err error) {
-	uuid := uuid.Must(uuid.NewUUID()).String()
+	metadataUuid := uuid.Must(uuid.NewUUID()).String()
 	m := model.Metadata{
 		DatasetId:   datasetID,
-		MetadataId:  uuid,
+		MetadataId:  metadataUuid,
 		DescribedBy: schemaUrl,
 		Created:     time.Now(),
 	}
 	persistErr := mp.PersistMetadata(m)
 	if persistErr != nil {
-		return m, uuid, nil
+		return m, metadataUuid, nil
 	} else {
 		return m, "", persistErr
 	}
