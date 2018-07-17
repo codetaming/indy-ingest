@@ -25,7 +25,18 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 
 	schemaUrl := request.Headers["describedBy"]
 	bodyJson := request.Body
-	result, _ := validator.Validate(schemaUrl, bodyJson)
+	result, err := validator.Validate(schemaUrl, bodyJson)
+
+	if err != nil {
+		errorMessage := model.ErrorMessage{Message: err.Error()}
+		jsonErrorMessage, _ := json.Marshal(errorMessage)
+		return events.APIGatewayProxyResponse{
+			Headers:    headers,
+			Body:       string(jsonErrorMessage),
+			StatusCode: 500,
+		}, nil
+	}
+
 	body, err := json.Marshal(result)
 
 	if err != nil {
