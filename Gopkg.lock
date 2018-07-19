@@ -34,6 +34,7 @@
     "aws/signer/v4",
     "internal/sdkio",
     "internal/sdkrand",
+    "internal/sdkuri",
     "internal/shareddefaults",
     "private/protocol",
     "private/protocol/eventstream",
@@ -52,8 +53,8 @@
     "service/s3/s3manager",
     "service/sts"
   ]
-  revision = "eeb327a02aac261d701e102e14993eae4d5ab844"
-  version = "v1.14.24"
+  revision = "8cf662a972fa7fba8f2c1ec57648cf840e2bb401"
+  version = "v1.14.30"
 
 [[projects]]
   name = "github.com/davecgh/go-spew"
@@ -64,8 +65,8 @@
 [[projects]]
   name = "github.com/go-ini/ini"
   packages = ["."]
-  revision = "af26abd521cd7697481572fdbc4a53cbea3dde1b"
-  version = "v1.38.0"
+  revision = "358ee7663966325963d4e8b2e1fbd570c5195153"
+  version = "v1.38.1"
 
 [[projects]]
   name = "github.com/google/uuid"
@@ -118,7 +119,7 @@
   branch = "master"
   name = "github.com/xeipuuv/gojsonschema"
   packages = ["."]
-  revision = "1d523034197ff1f222f6429836dd36a2457a1874"
+  revision = "b84684d0e066369f2a7a8a525f3080909ed4ea6b"
 
 [solve-meta]
   analyzer-name = "dep"
