@@ -25,6 +25,9 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	}
 
 	linkHeader := request.Headers["Link"]
+	if linkHeader == "" {
+		linkHeader = request.Headers["link"]
+	}
 	links := linkheader.Parse(linkHeader)
 	var link linkheader.Link
 	if len(links) == 1 {
