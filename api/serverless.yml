@@ -90,6 +90,7 @@ functions:
     - http:
         path: validate
         method: post
+        cors: true
 
 resources:
   Resources:
