@@ -11,7 +11,7 @@ import (
 func TestHandler(t *testing.T) {
 
 	headers := map[string]string{
-		"describedBy": "https://schema.humancellatlas.org/type/biomaterial/5.1.0/specimen_from_organism",
+		"Link": `<https://schema.humancellatlas.org/type/biomaterial/5.1.0/specimen_from_organism>; rel="describedby"`,
 	}
 
 	tests := []struct {

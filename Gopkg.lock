@@ -97,6 +97,12 @@
   version = "v1.2.2"
 
 [[projects]]
+  name = "github.com/tomnomnom/linkheader"
+  packages = ["."]
+  revision = "6953a30d444317754766fccdd3f7f000edc874f6"
+  version = "0.1.0"
+
+[[projects]]
   branch = "master"
   name = "github.com/xeipuuv/gojsonpointer"
   packages = ["."]
@@ -117,6 +123,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "dc0f0d29c8bcb22aaae6eeeb67cf5ff04238255420f05bdc6fa7d5632692dd10"
+  inputs-digest = "26806f0d05b9683976a986fb1a441101fbdeb00433d10fc6d9c3b2a1a2f05767"
   solver-name = "gps-cdcl"
   solver-version = 1
