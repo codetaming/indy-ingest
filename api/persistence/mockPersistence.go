@@ -17,3 +17,7 @@ func (MockPersistence) PersistMetadata(metadata model.Metadata) (err error) {
 func (MockPersistence) CheckDatasetIdExists(datasetId string) (bool, error) {
 	return true, nil
 }
+
+func (MockPersistence) ListDatasets() ([]model.Dataset, error) {
+	return []model.Dataset{}, nil
+}

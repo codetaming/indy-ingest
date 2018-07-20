@@ -15,3 +15,7 @@ type MetadataPersister interface {
 type DatasetExistenceChecker interface {
 	CheckDatasetIdExists(datasetId string) (bool, error)
 }
+
+type DatasetLister interface {
+	ListDatasets() ([]model.Dataset, error)
+}

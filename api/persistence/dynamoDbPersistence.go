@@ -97,3 +97,30 @@ func (DynamoPersistence) CheckDatasetIdExists(datasetId string) (bool, error) {
 
 	return true, nil
 }
+
+func (DynamoPersistence) ListDatasets() ([]model.Dataset, error) {
+	var (
+		tableName = aws.String(os.Getenv("DATASET_TABLE"))
+	)
+	var queryInput = &dynamodb.QueryInput{
+		TableName: tableName,
+		KeyConditions: map[string]*dynamodb.Condition{
+			"owner": {
+				ComparisonOperator: aws.String("EQ"),
+				AttributeValueList: []*dynamodb.AttributeValue{
+					{
+						S: aws.String(model.DefaultOwner),
+					},
+				},
+			},
+		},
+	}
+	result, err := ddb.Query(queryInput)
+	if err != nil {
+		return nil, err
+	} else {
+		var datasets []model.Dataset
+		err = dynamodbattribute.UnmarshalListOfMaps(result.Items, &datasets)
+		return datasets, nil
+	}
+}

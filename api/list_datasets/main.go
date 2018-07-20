@@ -1,14 +1,35 @@
 package main
 
 import (
+	"encoding/json"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
-	"log"
+	"github.com/codetaming/indy-ingest/api/model"
+	"github.com/codetaming/indy-ingest/api/persistence"
 )
 
-func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	log.Println("List Datasets")
-	return events.APIGatewayProxyResponse{}, nil
+//AWS Lambda entry point
+func Handler(_ events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	return Do(new(persistence.DynamoPersistence))
+}
+
+//Do executes the function allowing dependencies to be specified
+func Do(p persistence.DatasetLister) (events.APIGatewayProxyResponse, error) {
+	return respond(p.ListDatasets())
+}
+
+func respond(datasets []model.Dataset, err error) (events.APIGatewayProxyResponse, error) {
+	if err != nil {
+		return events.APIGatewayProxyResponse{
+			Body:       err.Error(),
+			StatusCode: 500,
+		}, nil
+	}
+	body, _ := json.Marshal(datasets)
+	return events.APIGatewayProxyResponse{
+		Body:       string(body),
+		StatusCode: 200,
+	}, nil
 }
 
 func main() {

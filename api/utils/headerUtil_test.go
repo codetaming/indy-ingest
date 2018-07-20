@@ -1,8 +1,9 @@
-package utils
+package utils_test
 
 import (
 	"errors"
 	"github.com/codetaming/indy-ingest/_vendor-20180711202013/github.com/stretchr/testify/assert"
+	"github.com/codetaming/indy-ingest/api/utils"
 	"testing"
 )
 
@@ -50,7 +51,7 @@ func TestReturnUrlForHeaders(t *testing.T) {
 		},
 	}
 	for _, test := range tests {
-		url, err := ExtractSchemaUrl(test.headers)
+		url, err := utils.ExtractSchemaUrl(test.headers)
 		if nil == test.err {
 			assert.Equal(t, test.err, err)
 		}
