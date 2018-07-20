@@ -32,7 +32,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		return events.APIGatewayProxyResponse{
 			Headers:    headers,
 			Body:       string(jsonErrorMessage),
-			StatusCode: 500,
+			StatusCode: 400,
 		}, nil
 	}
 
@@ -45,7 +45,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		return events.APIGatewayProxyResponse{
 			Headers:    headers,
 			Body:       string(jsonErrorMessage),
-			StatusCode: 500,
+			StatusCode: 400,
 		}, nil
 	}
 

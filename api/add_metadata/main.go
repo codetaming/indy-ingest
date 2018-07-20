@@ -7,6 +7,7 @@ import (
 	"github.com/codetaming/indy-ingest/api/model"
 	"github.com/codetaming/indy-ingest/api/persistence"
 	"github.com/codetaming/indy-ingest/api/storage"
+	"github.com/codetaming/indy-ingest/api/utils"
 	"github.com/codetaming/indy-ingest/api/validator"
 	"github.com/google/uuid"
 	"time"
@@ -45,7 +46,18 @@ func Do(request events.APIGatewayProxyRequest, dec persistence.DatasetExistenceC
 		}, nil
 	}
 
-	schemaUrl := request.Headers["describedBy"]
+	schemaUrl, err := utils.ExtractSchemaUrl(request.Headers)
+
+	if err != nil {
+		errorMessage := err.Error()
+		jsonErrorMessage, _ := json.Marshal(errorMessage)
+		return events.APIGatewayProxyResponse{
+			Headers:    headers,
+			Body:       string(jsonErrorMessage),
+			StatusCode: 400,
+		}, nil
+	}
+
 	bodyJson := request.Body
 
 	result, err := validator.Validate(schemaUrl, bodyJson)

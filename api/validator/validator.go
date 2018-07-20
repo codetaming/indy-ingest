@@ -17,6 +17,7 @@ func Validate(schemaUrl string, bodyJson string) (model.ValidationResult, error)
 	if bodyJson == "" {
 		return model.ValidationResult{}, errors.New("JSON cannot be empty")
 	}
+
 	schemaLoader := gojsonschema.NewReferenceLoader(schemaUrl)
 	documentLoader := gojsonschema.NewStringLoader(bodyJson)
 	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
