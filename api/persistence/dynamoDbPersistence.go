@@ -99,6 +99,7 @@ func (DynamoPersistence) CheckDatasetIdExists(datasetId string) (bool, error) {
 }
 
 func (DynamoPersistence) ListDatasets() ([]model.Dataset, error) {
+	log.Print("Listing datasets")
 	var (
 		tableName = aws.String(os.Getenv("DATASET_TABLE"))
 	)
@@ -117,10 +118,12 @@ func (DynamoPersistence) ListDatasets() ([]model.Dataset, error) {
 	}
 	result, err := ddb.Query(queryInput)
 	if err != nil {
+		log.Print(err)
 		return nil, err
 	} else {
 		var datasets []model.Dataset
 		err = dynamodbattribute.UnmarshalListOfMaps(result.Items, &datasets)
+		log.Print(err)
 		return datasets, nil
 	}
 }
