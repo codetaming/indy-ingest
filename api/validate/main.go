@@ -6,8 +6,8 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/codetaming/indy-ingest/api/model"
+	"github.com/codetaming/indy-ingest/api/utils"
 	"github.com/codetaming/indy-ingest/api/validator"
-	"github.com/tomnomnom/linkheader"
 	"log"
 )
 
@@ -24,18 +24,10 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		return events.APIGatewayProxyResponse{}, ErrMetadataNotProvided
 	}
 
-	linkHeader := request.Headers["Link"]
-	if linkHeader == "" {
-		linkHeader = request.Headers["link"]
-	}
-	links := linkheader.Parse(linkHeader)
-	var link linkheader.Link
-	if len(links) == 1 {
-		link = links[0]
-	}
+	schemaUrl, err := utils.ExtractSchemaUrl(request.Headers)
 
-	if link.URL == "" || link.Rel != "describedby" {
-		errorMessage := model.ErrorMessage{Message: "Link header is invalid, not unique or missing"}
+	if err != nil {
+		errorMessage := err.Error()
 		jsonErrorMessage, _ := json.Marshal(errorMessage)
 		return events.APIGatewayProxyResponse{
 			Headers:    headers,
@@ -45,7 +37,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	}
 
 	bodyJson := request.Body
-	result, err := validator.Validate(link.URL, bodyJson)
+	result, err := validator.Validate(schemaUrl, bodyJson)
 
 	if err != nil {
 		errorMessage := model.ErrorMessage{Message: err.Error()}
