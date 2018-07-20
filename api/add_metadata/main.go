@@ -120,9 +120,8 @@ func createMetadataRecord(datasetID string, schemaUrl string, mp persistence.Met
 	persistErr := mp.PersistMetadata(m)
 	if persistErr != nil {
 		return m, metadataUuid, nil
-	} else {
-		return m, "", persistErr
 	}
+	return m, "", persistErr
 }
 
 func main() {
