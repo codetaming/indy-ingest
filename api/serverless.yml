@@ -38,7 +38,7 @@ functions:
           path: dataset
           method: post
   list-datasets:
-    handler: bin/list_dataset
+    handler: bin/list_datasets
     events:
       - http:
           path: dataset
