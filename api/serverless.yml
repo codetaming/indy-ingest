@@ -12,6 +12,7 @@ provider:
       Action:
         - dynamodb:GetItem
         - dynamodb:PutItem
+        - dynamodb:Query
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DATASET_TABLE}"
     - Effect: Allow
       Action:

@@ -19,14 +19,17 @@ func Do(p persistence.DatasetLister) (events.APIGatewayProxyResponse, error) {
 }
 
 func respond(datasets []model.Dataset, err error) (events.APIGatewayProxyResponse, error) {
+	headers := map[string]string{"Content-Type": "application/json"}
 	if err != nil {
 		return events.APIGatewayProxyResponse{
+			Headers:    headers,
 			Body:       err.Error(),
 			StatusCode: 500,
 		}, nil
 	}
 	body, _ := json.Marshal(datasets)
 	return events.APIGatewayProxyResponse{
+		Headers:    headers,
 		Body:       string(body),
 		StatusCode: 200,
 	}, nil
