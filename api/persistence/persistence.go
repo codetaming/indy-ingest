@@ -19,3 +19,7 @@ type DatasetExistenceChecker interface {
 type DatasetLister interface {
 	ListDatasets() ([]model.Dataset, error)
 }
+
+type DatasetGetter interface {
+	GetDataset(s string) (model.Dataset, error)
+}

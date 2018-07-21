@@ -21,3 +21,9 @@ func (MockPersistence) CheckDatasetIdExists(datasetId string) (bool, error) {
 func (MockPersistence) ListDatasets() ([]model.Dataset, error) {
 	return []model.Dataset{}, nil
 }
+
+func (MockPersistence) GetDataset(s string) (model.Dataset, error) {
+	return model.Dataset{
+		DatasetId: s,
+	}, nil
+}

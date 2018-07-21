@@ -10,15 +10,16 @@ import (
 
 //AWS Lambda entry point
 func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	return Do(new(persistence.DynamoPersistence))
+	return Do(request, new(persistence.DynamoPersistence))
 }
 
 //Do executes the function allowing dependencies to be specified
-func Do(p persistence.DatasetLister) (events.APIGatewayProxyResponse, error) {
-	return respond(p.ListDatasets())
+func Do(request events.APIGatewayProxyRequest, p persistence.DatasetGetter) (events.APIGatewayProxyResponse, error) {
+	datasetId := request.PathParameters["id"]
+	return respond(p.GetDataset(datasetId))
 }
 
-func respond(datasets []model.Dataset, err error) (events.APIGatewayProxyResponse, error) {
+func respond(dataset model.Dataset, err error) (events.APIGatewayProxyResponse, error) {
 	headers := map[string]string{"Content-Type": "application/json"}
 	if err != nil {
 		return events.APIGatewayProxyResponse{
@@ -27,7 +28,7 @@ func respond(datasets []model.Dataset, err error) (events.APIGatewayProxyRespons
 			StatusCode: 500,
 		}, nil
 	}
-	body, _ := json.Marshal(datasets)
+	body, _ := json.Marshal(dataset)
 	return events.APIGatewayProxyResponse{
 		Headers:    headers,
 		Body:       string(body),

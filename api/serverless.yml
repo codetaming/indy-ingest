@@ -45,7 +45,7 @@ functions:
           path: dataset
           method: get
   get-dataset:
-    handler: bin/dummy
+    handler: bin/get_dataset
     events:
       - http:
           path: dataset/{id}
