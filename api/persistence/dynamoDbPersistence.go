@@ -129,33 +129,22 @@ func (DynamoPersistence) GetDataset(datasetId string) (model.Dataset, error) {
 	var (
 		tableName = aws.String(os.Getenv("DATASET_TABLE"))
 	)
-	var queryInput = &dynamodb.QueryInput{
+	result, err := ddb.GetItem(&dynamodb.GetItemInput{
 		TableName: tableName,
-		KeyConditions: map[string]*dynamodb.Condition{
+		Key: map[string]*dynamodb.AttributeValue{
 			"owner": {
-				ComparisonOperator: aws.String("EQ"),
-				AttributeValueList: []*dynamodb.AttributeValue{
-					{
-						S: aws.String(model.DefaultOwner),
-					},
-				},
+				S: aws.String(model.DefaultOwner),
 			},
 			"dataset_id": {
-				ComparisonOperator: aws.String("EQ"),
-				AttributeValueList: []*dynamodb.AttributeValue{
-					{
-						S: aws.String(datasetId),
-					},
-				},
+				S: aws.String(datasetId),
 			},
 		},
-	}
-	result, err := ddb.Query(queryInput)
+	})
+
 	if err != nil {
 		return model.Dataset{}, err
-	} else {
-		var dataset model.Dataset
-		err = dynamodbattribute.UnmarshalListOfMaps(result.Items, &dataset)
-		return dataset, nil
 	}
+	dataset := model.Dataset{}
+	err = dynamodbattribute.UnmarshalMap(result.Item, &dataset)
+	return dataset, nil
 }
