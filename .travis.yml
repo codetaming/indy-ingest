@@ -12,7 +12,6 @@ before_install:
 install:
   - dep ensure
   - go get github.com/golang/lint/golint
-  - go get github.com/haya14busa/goverage
 
 matrix:
   allow_failures:
