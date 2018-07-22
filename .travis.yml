@@ -26,10 +26,13 @@ before_script:
   - LINT_PKGS=$(go list ./... | grep -Ev 'aws-lambda-go/lambda')
 
 script:
-  #- diff -u <(echo -n) <(gofmt -d $($LINT_PKGS))                           # Fail if a .go file hasn't been formatted with gofmt
+  #- diff -u <(echo -n) <(gofmt -d $($LINT_PKGS))                  # Fail if a .go file hasn't been formatted with gofmt
   - ./test.sh                                                      # Run all tests with coverage
   - go vet -v ./...                                                # static analyisis
   - golint $LINT_PKGS                                              # lint - ignore failures for now
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
+
+notifications:
+  slack: codetaming:DDmjZQZbSzeRWBjVTk3cKmI6
