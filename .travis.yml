@@ -7,6 +7,7 @@ go:
 before_install:
     - curl -L -s https://github.com/golang/dep/releases/download/v0.4.1/dep-linux-amd64 -o $GOPATH/bin/dep
     - chmod +x $GOPATH/bin/dep
+    - chmod +x ./test.sh
 
 install:
   - dep ensure
@@ -27,7 +28,7 @@ before_script:
 
 script:
   - diff -u <(echo -n) <(gofmt -d ./api)                           # Fail if a .go file hasn't been formatted with gofmt
-  - goverage -v -covermode=atomic -coverprofile=coverage.txt $PKGS # Run all tests with coverage
+  - ./test.sh                                                      # Run all tests with coverage
   - go vet -v ./...                                                # static analyisis
   - golint $LINT_PKGS                                              # lint - ignore failures for now
 
