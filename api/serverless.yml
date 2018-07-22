@@ -9,7 +9,7 @@ provider:
     DATASET_TABLE: "${self:service}-${opt:stage, self:provider.stage}-dataset"
     METADATA_TABLE: "${self:service}-${opt:stage, self:provider.stage}-metadata"
     METADATA_BUCKET: "${self:service}-${opt:stage, self:provider.stage}-metadata"
-    BASE_URL: { "Fn::Join" : ["", [" https://", { "Ref" : "ApiGatewayRestApi" }, ".execute-api.${self:provider.region}.amazonaws.com/${self:provider.stage}" ] ]  }
+    BASE_URL: { "Fn::Join" : ["", [" https://", { "Ref" : "ApiGatewayRestApi" }, ".execute-api.${opt:region, self:provider.region}.amazonaws.com/${opt:stage, self:provider.stage}" ] ]  }
   iamRoleStatements:
     - Effect: Allow
       Action:
