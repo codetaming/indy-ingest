@@ -3,11 +3,13 @@ service: indy-ingest
 provider:
   name: aws
   runtime: go1.x
+  region: us-east-1
+  stage: dev
   environment:
     DATASET_TABLE: "${self:service}-${opt:stage, self:provider.stage}-dataset"
     METADATA_TABLE: "${self:service}-${opt:stage, self:provider.stage}-metadata"
     METADATA_BUCKET: "${self:service}-${opt:stage, self:provider.stage}-metadata"
-    BASE_URL: { "Fn::Join" : ["", [" https://", { "Ref" : "ApiGatewayRestApi" }, ".execute-api.${self:custom.region}.amazonaws.com/${self:custom.stage}" ] ]  }
+    BASE_URL: { "Fn::Join" : ["", [" https://", { "Ref" : "ApiGatewayRestApi" }, ".execute-api.${self:provider.region}.amazonaws.com/${self:provider.stage}" ] ]  }
   iamRoleStatements:
     - Effect: Allow
       Action:
