@@ -16,3 +16,7 @@
 [8]: https://codecov.io/gh/codetaming/indy-ingest
 [9]: https://api.codacy.com/project/badge/Grade/b75a9233c6064ba4a61c70e44fbaae26
 [10]: https://www.codacy.com/app/danielvaughan/indy-ingest?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=codetaming/indy-ingest&amp;utm_campaign=Badge_Grade
+
+*Personal learning project for GoLang and AWS*
+
+Creates and API for submission and validation of JSON via API Gateway and Lambda with storage in data S3 and state storage in DynamoDB.

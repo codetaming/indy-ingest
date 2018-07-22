@@ -53,8 +53,8 @@
     "service/s3/s3manager",
     "service/sts"
   ]
-  revision = "8cf662a972fa7fba8f2c1ec57648cf840e2bb401"
-  version = "v1.14.30"
+  revision = "bc3f534c19ffdf835e524e11f0f825b3eaf541c3"
+  version = "v1.14.31"
 
 [[projects]]
   name = "github.com/davecgh/go-spew"
@@ -124,6 +124,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "e5c9f644a771a6b36685fd4717a6a1d0b2d251063bc98b9592a167fe001cf2f2"
+  inputs-digest = "f92d6284d9eb8408e856d9744ab10bc2092cbc541a043e43cf1a4fa6f4cc9473"
   solver-name = "gps-cdcl"
   solver-version = 1
