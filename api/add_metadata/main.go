@@ -10,6 +10,7 @@ import (
 	"github.com/codetaming/indy-ingest/api/utils"
 	"github.com/codetaming/indy-ingest/api/validator"
 	"github.com/google/uuid"
+	"os"
 	"time"
 )
 
@@ -97,6 +98,8 @@ func Do(request events.APIGatewayProxyRequest, dec persistence.DatasetExistenceC
 			Info: metadataRecord,
 			File: fileLocation,
 		}
+		baseUrl := os.Getenv("BASE_URL")
+		headers["Location"] = baseUrl + "/dataset/" + datasetId + "/metadata/" + metadataId
 		jsonMetadataSuccessMessage, _ := json.Marshal(metadataSuccessMessage)
 		return events.APIGatewayProxyResponse{
 			Headers:    headers,

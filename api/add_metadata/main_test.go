@@ -94,6 +94,9 @@ func TestHandler(t *testing.T) {
 		response, err := MockHandler(test.request)
 		assert.IsType(t, test.err, err)
 		assert.Equal(t, test.expectedCode, response.StatusCode)
+		if test.expectedCode == 201 {
+			assert.Regexp(t, "http://test/dataset/12345/metadata/.+", response.Headers["Location"])
+		}
 	}
 }
 
