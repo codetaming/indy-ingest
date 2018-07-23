@@ -143,7 +143,6 @@ func (DynamoPersistence) GetDataset(datasetId string) (model.Dataset, error) {
 			},
 		},
 	})
-
 	if err != nil {
 		return model.Dataset{}, err
 	}
@@ -167,7 +166,8 @@ func (DynamoPersistence) GetMetadata(datasetId string, metadataId string) (model
 			},
 		},
 	})
-
+	log.Print("table: " + os.Getenv(metadataTableEnv))
+	log.Print("dataset_id: " + datasetId + ", metadata_id: " + metadataId)
 	if err != nil {
 		return model.Metadata{}, err
 	}
