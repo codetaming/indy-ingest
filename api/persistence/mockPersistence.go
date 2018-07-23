@@ -22,8 +22,15 @@ func (MockPersistence) ListDatasets() ([]model.Dataset, error) {
 	return []model.Dataset{}, nil
 }
 
-func (MockPersistence) GetDataset(s string) (model.Dataset, error) {
+func (MockPersistence) GetDataset(datasetId string) (model.Dataset, error) {
 	return model.Dataset{
-		DatasetId: s,
+		DatasetId: datasetId,
+	}, nil
+}
+
+func (MockPersistence) GetMetadata(datasetId string, metadataId string) (model.Metadata, error) {
+	return model.Metadata{
+		DatasetId:  datasetId,
+		MetadataId: metadataId,
 	}, nil
 }

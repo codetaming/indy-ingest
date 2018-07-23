@@ -78,7 +78,7 @@ functions:
               paths:
               id: true
   get-metadata:
-    handler: bin/dummy
+    handler: bin/get_metadata
     events:
       - http:
           path: dataset/{id}/metadata/{uuid}

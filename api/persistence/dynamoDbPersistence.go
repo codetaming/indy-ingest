@@ -127,7 +127,7 @@ func (DynamoPersistence) ListDatasets() ([]model.Dataset, error) {
 
 func (DynamoPersistence) GetDataset(datasetId string) (model.Dataset, error) {
 	var (
-		tableName = aws.String(os.Getenv("DATASET_TABLE"))
+		tableName = aws.String(os.Getenv("METADATA_TABLE"))
 	)
 	result, err := ddb.GetItem(&dynamodb.GetItemInput{
 		TableName: tableName,
@@ -147,4 +147,29 @@ func (DynamoPersistence) GetDataset(datasetId string) (model.Dataset, error) {
 	dataset := model.Dataset{}
 	err = dynamodbattribute.UnmarshalMap(result.Item, &dataset)
 	return dataset, nil
+}
+
+func (DynamoPersistence) GetMetadata(datasetId string, metadataId string) (model.Metadata, error) {
+	var (
+		tableName = aws.String(os.Getenv("DATASET_TABLE"))
+	)
+	result, err := ddb.GetItem(&dynamodb.GetItemInput{
+		TableName: tableName,
+		Key: map[string]*dynamodb.AttributeValue{
+			"dataset_id": {
+				S: aws.String(datasetId),
+			},
+			"metadata_id": {
+				S: aws.String(metadataId),
+			},
+		},
+	})
+
+	if err != nil {
+		return model.Metadata{}, err
+	}
+	metadata := model.Metadata{}
+	err = dynamodbattribute.UnmarshalMap(result.Item, &metadata)
+	return metadata, nil
+
 }
