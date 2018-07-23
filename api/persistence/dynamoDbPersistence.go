@@ -15,6 +15,9 @@ type DynamoPersistence struct{}
 
 var ddb *dynamodb.DynamoDB
 
+const datasetTableEnv = "DATASET_TABLE"
+const metadataTableEnv = "METADATA_TABLE"
+
 func init() {
 	region := os.Getenv("AWS_REGION")
 	if ses, err := session.NewSession(&aws.Config{
@@ -32,7 +35,7 @@ func (DynamoPersistence) PersistDataset(dataset model.Dataset) (err error) {
 		log.Panic(fmt.Sprintf("failed to DynamoDB marshal Record, %v", err))
 	}
 
-	tableName := aws.String(os.Getenv("DATASET_TABLE"))
+	tableName := aws.String(os.Getenv(datasetTableEnv))
 
 	input := &dynamodb.PutItemInput{
 		Item:      av,
@@ -51,7 +54,7 @@ func (DynamoPersistence) PersistMetadata(metadata model.Metadata) (err error) {
 		return err
 	}
 
-	tableName := aws.String(os.Getenv("METADATA_TABLE"))
+	tableName := aws.String(os.Getenv(metadataTableEnv))
 
 	input := &dynamodb.PutItemInput{
 		Item:      av,
@@ -65,7 +68,7 @@ func (DynamoPersistence) PersistMetadata(metadata model.Metadata) (err error) {
 
 func (DynamoPersistence) CheckDatasetIdExists(datasetId string) (bool, error) {
 	var (
-		tableName = aws.String(os.Getenv("DATASET_TABLE"))
+		tableName = aws.String(os.Getenv(datasetTableEnv))
 	)
 	result, err := ddb.GetItem(&dynamodb.GetItemInput{
 		TableName: tableName,
@@ -100,7 +103,7 @@ func (DynamoPersistence) CheckDatasetIdExists(datasetId string) (bool, error) {
 
 func (DynamoPersistence) ListDatasets() ([]model.Dataset, error) {
 	var (
-		tableName = aws.String(os.Getenv("DATASET_TABLE"))
+		tableName = aws.String(os.Getenv(datasetTableEnv))
 	)
 	var queryInput = &dynamodb.QueryInput{
 		TableName: tableName,
@@ -127,7 +130,7 @@ func (DynamoPersistence) ListDatasets() ([]model.Dataset, error) {
 
 func (DynamoPersistence) GetDataset(datasetId string) (model.Dataset, error) {
 	var (
-		tableName = aws.String(os.Getenv("METADATA_TABLE"))
+		tableName = aws.String(os.Getenv(metadataTableEnv))
 	)
 	result, err := ddb.GetItem(&dynamodb.GetItemInput{
 		TableName: tableName,
@@ -151,7 +154,7 @@ func (DynamoPersistence) GetDataset(datasetId string) (model.Dataset, error) {
 
 func (DynamoPersistence) GetMetadata(datasetId string, metadataId string) (model.Metadata, error) {
 	var (
-		tableName = aws.String(os.Getenv("DATASET_TABLE"))
+		tableName = aws.String(os.Getenv(metadataTableEnv))
 	)
 	result, err := ddb.GetItem(&dynamodb.GetItemInput{
 		TableName: tableName,

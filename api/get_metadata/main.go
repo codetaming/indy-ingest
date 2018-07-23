@@ -24,9 +24,11 @@ func Do(request events.APIGatewayProxyRequest, p persistence.MetadataGetter) (ev
 func respond(metadata model.Metadata, err error) (events.APIGatewayProxyResponse, error) {
 	headers := map[string]string{"Content-Type": "application/json"}
 	if err != nil {
+		errorMessage := model.ErrorMessage{Message: err.Error()}
+		jsonErrorMessage, _ := json.Marshal(errorMessage)
 		return events.APIGatewayProxyResponse{
 			Headers:    headers,
-			Body:       err.Error(),
+			Body:       string(jsonErrorMessage),
 			StatusCode: 500,
 		}, nil
 	}
