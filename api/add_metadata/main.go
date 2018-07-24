@@ -23,7 +23,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 
 //Do executes the function allowing dependencies to be specified
 func Do(request events.APIGatewayProxyRequest, dec persistence.DatasetExistenceChecker, mp persistence.MetadataPersister, ms storage.MetadataStorer) (events.APIGatewayProxyResponse, error) {
-	datasetId := request.PathParameters["id"]
+	datasetId := request.PathParameters["datasetId"]
 	exists, err := checkDatasetExists(datasetId, dec)
 
 	headers := map[string]string{"Content-Type": "application/json"}

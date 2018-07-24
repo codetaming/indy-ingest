@@ -51,32 +51,32 @@ functions:
     handler: bin/get_dataset
     events:
       - http:
-          path: dataset/{id}
+          path: dataset/{datasetId}
           method: get
           request:
             parameters:
               paths:
-              id: true
+              datasetId: true
   add-metadata:
     handler: bin/add_metadata
     events:
       - http:
-          path: dataset/{id}/metadata
+          path: dataset/{datasetId}/metadata
           method: post
           request:
             parameters:
               paths:
-              id: true
+              datasetId: true
   list-metadata:
     handler: bin/dummy
     events:
       - http:
-          path: dataset/{id}/metadata
+          path: dataset/{datasetId}/metadata
           method: get
           request:
             parameters:
               paths:
-              id: true
+              datasetId: true
   get-metadata:
     handler: bin/get_metadata
     events:

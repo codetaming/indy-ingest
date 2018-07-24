@@ -15,7 +15,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 
 //Do executes the function allowing dependencies to be specified
 func Do(request events.APIGatewayProxyRequest, p persistence.DatasetGetter) (events.APIGatewayProxyResponse, error) {
-	datasetId := request.PathParameters["id"]
+	datasetId := request.PathParameters["datasetId"]
 	return respond(p.GetDataset(datasetId))
 }
 
