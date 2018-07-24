@@ -130,7 +130,7 @@ func (DynamoPersistence) ListDatasets() ([]model.Dataset, error) {
 
 func (DynamoPersistence) GetDataset(datasetId string) (model.Dataset, error) {
 	var (
-		tableName = aws.String(os.Getenv(metadataTableEnv))
+		tableName = aws.String(os.Getenv(datasetTableEnv))
 	)
 	result, err := ddb.GetItem(&dynamodb.GetItemInput{
 		TableName: tableName,
