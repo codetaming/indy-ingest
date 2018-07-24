@@ -22,7 +22,7 @@ var headers = map[string]string{
 }
 
 var pathParameters = map[string]string{
-	"id": "12345",
+	"datasetId": "12345",
 }
 
 func TestErroredHandler(t *testing.T) {
