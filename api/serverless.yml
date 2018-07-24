@@ -81,7 +81,7 @@ functions:
     handler: bin/get_metadata
     events:
       - http:
-          path: dataset/{id}/metadata/{uuid}
+          path: dataset/{datasetId}/metadata/{metadataId}
           method: get
           request:
             parameters:
