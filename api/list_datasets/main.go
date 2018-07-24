@@ -6,6 +6,7 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/codetaming/indy-ingest/api/model"
 	"github.com/codetaming/indy-ingest/api/persistence"
+	"github.com/codetaming/indy-ingest/api/utils"
 )
 
 //AWS Lambda entry point
@@ -21,11 +22,7 @@ func Do(p persistence.DatasetLister) (events.APIGatewayProxyResponse, error) {
 func respond(datasets []model.Dataset, err error) (events.APIGatewayProxyResponse, error) {
 	headers := map[string]string{"Content-Type": "application/json"}
 	if err != nil {
-		return events.APIGatewayProxyResponse{
-			Headers:    headers,
-			Body:       err.Error(),
-			StatusCode: 500,
-		}, nil
+		utils.RespondToInternalError(err)
 	}
 	body, _ := json.Marshal(datasets)
 	return events.APIGatewayProxyResponse{

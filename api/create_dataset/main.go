@@ -6,6 +6,7 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/codetaming/indy-ingest/api/model"
 	"github.com/codetaming/indy-ingest/api/persistence"
+	"github.com/codetaming/indy-ingest/api/utils"
 	"github.com/google/uuid"
 	"os"
 	"time"
@@ -31,16 +32,15 @@ func createDataSet(p persistence.DatasetPersister) (model.Dataset, error) {
 }
 
 func respond(d model.Dataset, err error) (events.APIGatewayProxyResponse, error) {
-	headers := map[string]string{"Content-Type": "application/json"}
 	if err != nil {
-		return events.APIGatewayProxyResponse{
-			Headers:    headers,
-			Body:       err.Error(),
-			StatusCode: 500,
-		}, nil
+		utils.RespondToInternalError(err)
 	}
+
 	baseUrl := os.Getenv("BASE_URL")
-	headers["Location"] = baseUrl + "/dataset/" + d.DatasetId
+	headers := map[string]string{
+		"Content-Type": "application/json",
+		"Location":     baseUrl + "/dataset/" + d.DatasetId,
+	}
 	body, _ := json.Marshal(d)
 	return events.APIGatewayProxyResponse{
 		Headers:    headers,

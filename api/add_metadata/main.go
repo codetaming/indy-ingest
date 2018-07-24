@@ -27,72 +27,37 @@ func Do(request events.APIGatewayProxyRequest, dec persistence.DatasetExistenceC
 	exists, err := checkDatasetExists(datasetId, dec)
 
 	headers := map[string]string{"Content-Type": "application/json"}
+
 	if err != nil {
-		errorMessage := model.ErrorMessage{Message: err.Error()}
-		jsonErrorMessage, _ := json.Marshal(errorMessage)
-		return events.APIGatewayProxyResponse{
-			Headers:    headers,
-			Body:       string(jsonErrorMessage),
-			StatusCode: 500,
-		}, nil
+		return utils.RespondToInternalError(err)
 	}
 
 	if !exists {
-		errorMessage := model.ErrorMessage{Message: datasetId + " not found"}
-		jsonErrorMessage, _ := json.Marshal(errorMessage)
-		return events.APIGatewayProxyResponse{
-			Headers:    headers,
-			Body:       string(jsonErrorMessage),
-			StatusCode: 404,
-		}, nil
+		return utils.RespondToNotFound(datasetId)
 	}
 
 	schemaUrl, err := utils.ExtractSchemaUrl(request.Headers)
-
 	if err != nil {
-		errorMessage := err.Error()
-		jsonErrorMessage, _ := json.Marshal(errorMessage)
-		return events.APIGatewayProxyResponse{
-			Headers:    headers,
-			Body:       string(jsonErrorMessage),
-			StatusCode: 400,
-		}, nil
+		return utils.RespondToClientError(err)
 	}
 
 	bodyJson := request.Body
 
 	result, err := validator.Validate(schemaUrl, bodyJson)
-
 	if err != nil {
-		errorMessage := model.ErrorMessage{Message: err.Error()}
-		jsonErrorMessage, _ := json.Marshal(errorMessage)
-		return events.APIGatewayProxyResponse{
-			Headers:    headers,
-			Body:       string(jsonErrorMessage),
-			StatusCode: 500,
-		}, nil
+		return utils.RespondToInternalError(err)
 	}
 
 	if result.Valid {
+
 		metadataRecord, metadataId, err := createMetadataRecord(datasetId, schemaUrl, mp)
 		if err != nil {
-			errorMessage := model.ErrorMessage{Message: err.Error()}
-			jsonErrorMessage, _ := json.Marshal(errorMessage)
-			return events.APIGatewayProxyResponse{
-				Headers:    headers,
-				Body:       string(jsonErrorMessage),
-				StatusCode: 500,
-			}, nil
+			return utils.RespondToInternalError(err)
 		}
+
 		fileLocation, err := createMetadataFile(datasetId, metadataId, bodyJson, ms)
 		if err != nil {
-			errorMessage := model.ErrorMessage{Message: err.Error()}
-			jsonErrorMessage, _ := json.Marshal(errorMessage)
-			return events.APIGatewayProxyResponse{
-				Headers:    headers,
-				Body:       string(jsonErrorMessage),
-				StatusCode: 500,
-			}, nil
+			return utils.RespondToInternalError(err)
 		}
 		metadataSuccessMessage := model.MetadataSuccessMessage{
 			Info: metadataRecord,

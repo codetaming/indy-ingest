@@ -5,7 +5,6 @@ import (
 	"errors"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/codetaming/indy-ingest/api/model"
 	"github.com/codetaming/indy-ingest/api/utils"
 	"github.com/codetaming/indy-ingest/api/validator"
 	"log"
@@ -27,38 +26,20 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	schemaUrl, err := utils.ExtractSchemaUrl(request.Headers)
 
 	if err != nil {
-		errorMessage := err.Error()
-		jsonErrorMessage, _ := json.Marshal(errorMessage)
-		return events.APIGatewayProxyResponse{
-			Headers:    headers,
-			Body:       string(jsonErrorMessage),
-			StatusCode: 400,
-		}, nil
+		utils.RespondToClientError(err)
 	}
 
 	bodyJson := request.Body
 	result, err := validator.Validate(schemaUrl, bodyJson)
 
 	if err != nil {
-		errorMessage := model.ErrorMessage{Message: err.Error()}
-		jsonErrorMessage, _ := json.Marshal(errorMessage)
-		return events.APIGatewayProxyResponse{
-			Headers:    headers,
-			Body:       string(jsonErrorMessage),
-			StatusCode: 400,
-		}, nil
+		utils.RespondToClientError(err)
 	}
 
 	body, err := json.Marshal(result)
 
 	if err != nil {
-		errorMessage := model.ErrorMessage{Message: err.Error()}
-		jsonErrorMessage, _ := json.Marshal(errorMessage)
-		return events.APIGatewayProxyResponse{
-			Headers:    headers,
-			Body:       string(jsonErrorMessage),
-			StatusCode: 500,
-		}, nil
+		utils.RespondToInternalError(err)
 	}
 
 	return events.APIGatewayProxyResponse{
