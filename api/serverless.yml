@@ -86,8 +86,8 @@ functions:
           request:
             parameters:
               paths:
-                id: true
-                uuid: true
+                datasetId: true
+                metadataId: true
   validate:
     handler: bin/validate
     events:
