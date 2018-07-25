@@ -4,6 +4,7 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/codetaming/indy-ingest/api/get_metadata"
 	"github.com/codetaming/indy-ingest/api/persistence"
+	"github.com/codetaming/indy-ingest/api/storage"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -37,5 +38,5 @@ func TestHandler(t *testing.T) {
 }
 
 func MockHandler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	return main.Do(request, new(persistence.MockPersistence))
+	return main.Do(request, new(persistence.MockPersistence), new(storage.MockStorage))
 }
