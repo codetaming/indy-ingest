@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/codetaming/indy-ingest/api/model"
@@ -25,14 +24,16 @@ func Do(request events.APIGatewayProxyRequest, p persistence.MetadataGetter, s s
 }
 
 func respond(metadataRecord model.Metadata, metadataContent string, err error) (events.APIGatewayProxyResponse, error) {
-	headers := map[string]string{"Content-Type": "application/json"}
 	if err != nil {
 		utils.RespondToInternalError(err)
 	}
-	body, _ := json.Marshal(metadataRecord)
+	headers := map[string]string{
+		"Content-Type": "application/json",
+		"Link":         metadataRecord.DescribedBy,
+	}
 	return events.APIGatewayProxyResponse{
 		Headers:    headers,
-		Body:       string(body),
+		Body:       string(metadataContent),
 		StatusCode: 200,
 	}, nil
 }

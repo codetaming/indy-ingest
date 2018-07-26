@@ -58,5 +58,5 @@ func (S3Storage) RetrieveMetadata(key string) (string, error) {
 	if b, err := ioutil.ReadAll(result.Body); err == nil {
 		return string(b), nil
 	}
-	return "", nil
+	return "", err
 }

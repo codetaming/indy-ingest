@@ -27,7 +27,7 @@ func TestHandler(t *testing.T) {
 				PathParameters: pathParameters,
 				Headers:        headers,
 				Body:           ``},
-			expect: "{\"dataset_id\":\"12345\",\"metadata_id\":\"67890\",\"described_by\":\"\",\"created\":\"0001-01-01T00:00:00Z\"}",
+			expect: "{}",
 			err:    nil,
 		}}
 	for _, test := range tests {
