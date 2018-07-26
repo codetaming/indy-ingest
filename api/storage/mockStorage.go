@@ -6,6 +6,6 @@ func (MockStorage) StoreMetadata(key string, bodyJson string) (string, error) {
 	return key, nil
 }
 
-func (MockStorage) RetrieveMetadata(datasetId string, metadataId string) (string, error) {
+func (MockStorage) RetrieveMetadata(key string) (string, error) {
 	return "{}", nil
 }

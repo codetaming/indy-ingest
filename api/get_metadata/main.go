@@ -11,7 +11,7 @@ import (
 
 //AWS Lambda entry point
 func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	return Do(request, new(persistence.DynamoPersistence), new(storage.MockStorage))
+	return Do(request, new(persistence.DynamoPersistence), new(storage.S3Storage))
 }
 
 //Do executes the function allowing dependencies to be specified
@@ -19,7 +19,7 @@ func Do(request events.APIGatewayProxyRequest, p persistence.MetadataGetter, s s
 	datasetId := request.PathParameters["datasetId"]
 	metadataId := request.PathParameters["metadataId"]
 	metadataRecord, err := p.GetMetadata(datasetId, metadataId)
-	metadataContent, err := s.RetrieveMetadata(datasetId, metadataId)
+	metadataContent, err := s.RetrieveMetadata(datasetId + "/" + metadataId)
 	return respond(metadataRecord, metadataContent, err)
 }
 

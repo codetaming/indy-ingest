@@ -5,5 +5,5 @@ type MetadataStorer interface {
 }
 
 type MetadataRetriever interface {
-	RetrieveMetadata(datasetId string, metadataId string) (string, error)
+	RetrieveMetadata(key string) (string, error)
 }
