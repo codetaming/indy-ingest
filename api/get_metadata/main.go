@@ -7,6 +7,7 @@ import (
 	"github.com/codetaming/indy-ingest/api/persistence"
 	"github.com/codetaming/indy-ingest/api/storage"
 	"github.com/codetaming/indy-ingest/api/utils"
+	"time"
 )
 
 //AWS Lambda entry point
@@ -28,8 +29,8 @@ func respond(metadataRecord model.Metadata, metadataContent string, err error) (
 		utils.RespondToInternalError(err)
 	}
 	headers := map[string]string{
-		"Content-Type": "application/json",
-		"Link":         metadataRecord.DescribedBy,
+		"Content-Type": "application/json; schema=\"" + metadataRecord.DescribedBy + "\"",
+		"Date":         metadataRecord.Created.Format(time.RFC1123),
 	}
 	return events.APIGatewayProxyResponse{
 		Headers:    headers,
