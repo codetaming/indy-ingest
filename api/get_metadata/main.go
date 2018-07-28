@@ -20,6 +20,9 @@ func Do(request events.APIGatewayProxyRequest, p persistence.MetadataGetter, s s
 	datasetId := request.PathParameters["datasetId"]
 	metadataId := request.PathParameters["metadataId"]
 	metadataRecord, err := p.GetMetadata(datasetId, metadataId)
+	if err != nil {
+		return utils.RespondToError(err)
+	}
 	metadataContent, err := s.RetrieveMetadata(datasetId + "/" + metadataId)
 	return respond(metadataRecord, metadataContent, err)
 }
