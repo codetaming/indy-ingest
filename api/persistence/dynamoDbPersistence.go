@@ -129,9 +129,8 @@ func (DynamoPersistence) ListDatasets() ([]model.Dataset, error) {
 }
 
 func (DynamoPersistence) GetDataset(datasetId string) (model.Dataset, error) {
-	var (
-		tableName = aws.String(os.Getenv(datasetTableEnv))
-	)
+	var tableName = aws.String(os.Getenv(datasetTableEnv))
+	var dataset model.Dataset
 	result, err := ddb.GetItem(&dynamodb.GetItemInput{
 		TableName: tableName,
 		Key: map[string]*dynamodb.AttributeValue{
@@ -144,13 +143,12 @@ func (DynamoPersistence) GetDataset(datasetId string) (model.Dataset, error) {
 		},
 	})
 	if err != nil {
-		println(err.Error())
-		return model.Dataset{}, err
+		println("Error retrieving:" + err.Error())
+		return dataset, err
 	}
-	dataset := model.Dataset{}
 	err = dynamodbattribute.UnmarshalMap(result.Item, &dataset)
 	if err != nil {
-		return model.Dataset{}, err
+		return dataset, err
 	}
 	return dataset, nil
 }
