@@ -152,6 +152,7 @@ func (DynamoPersistence) GetDataset(datasetId string) (model.Dataset, error) {
 		log.Println("Error retrieving:" + err.Error())
 		return dataset, err
 	}
+	log.Println("Found:" + string(len(result.Item)))
 	if len(result.Item) == 0 {
 		log.Println("Not found:" + datasetId)
 		return dataset, &NotFoundError{datasetId}
