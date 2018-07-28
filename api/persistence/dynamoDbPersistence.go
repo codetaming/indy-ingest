@@ -73,9 +73,7 @@ func (DynamoPersistence) PersistMetadata(metadata model.Metadata) (err error) {
 }
 
 func (DynamoPersistence) CheckDatasetIdExists(datasetId string) (bool, error) {
-	var (
-		tableName = aws.String(os.Getenv(datasetTableEnv))
-	)
+	var tableName = aws.String(os.Getenv(datasetTableEnv))
 	result, err := ddb.GetItem(&dynamodb.GetItemInput{
 		TableName: tableName,
 		Key: map[string]*dynamodb.AttributeValue{
@@ -87,23 +85,17 @@ func (DynamoPersistence) CheckDatasetIdExists(datasetId string) (bool, error) {
 			},
 		},
 	})
-
 	if err != nil {
 		return false, err
 	}
-
 	dataset := model.Dataset{}
-
+	if len(result.Item) == 0 {
+		return false, &NotFoundError{datasetId}
+	}
 	err = dynamodbattribute.UnmarshalMap(result.Item, &dataset)
-
 	if err != nil {
 		return false, err
 	}
-
-	if dataset.DatasetId == "" {
-		return false, nil
-	}
-
 	return true, nil
 }
 
