@@ -144,10 +144,14 @@ func (DynamoPersistence) GetDataset(datasetId string) (model.Dataset, error) {
 		},
 	})
 	if err != nil {
+		println(err.Error())
 		return model.Dataset{}, err
 	}
 	dataset := model.Dataset{}
 	err = dynamodbattribute.UnmarshalMap(result.Item, &dataset)
+	if err != nil {
+		return model.Dataset{}, err
+	}
 	return dataset, nil
 }
 

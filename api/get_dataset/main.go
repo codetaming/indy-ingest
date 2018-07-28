@@ -16,18 +16,16 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 
 //Do executes the function allowing dependencies to be specified
 func Do(request events.APIGatewayProxyRequest, p persistence.DatasetGetter) (events.APIGatewayProxyResponse, error) {
-	datasetId := request.PathParameters["datasetId"]
-	return respond(p.GetDataset(datasetId))
+	return respond(p.GetDataset(request.PathParameters["datasetId"]))
 }
 
 func respond(dataset model.Dataset, err error) (events.APIGatewayProxyResponse, error) {
-	headers := map[string]string{"Content-Type": "application/json"}
 	if err != nil {
 		utils.RespondToInternalError(err)
 	}
 	body, _ := json.Marshal(dataset)
 	return events.APIGatewayProxyResponse{
-		Headers:    headers,
+		Headers:    map[string]string{"Content-Type": "application/json"},
 		Body:       string(body),
 		StatusCode: 200,
 	}, nil
