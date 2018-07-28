@@ -4,7 +4,20 @@ import (
 	"encoding/json"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/codetaming/indy-ingest/api/model"
+	"github.com/codetaming/indy-ingest/api/persistence"
+	"log"
 )
+
+func RespondToError(err error) (events.APIGatewayProxyResponse, error) {
+	switch t := err.(type) {
+	case *persistence.NotFoundError:
+		return RespondToNotFound(err.Error())
+		log.Println("NotFoundError", t)
+	default:
+		return RespondToInternalError(err)
+	}
+	return RespondToInternalError(err)
+}
 
 func RespondToInternalError(err error) (events.APIGatewayProxyResponse, error) {
 	return respond(500, err.Error())

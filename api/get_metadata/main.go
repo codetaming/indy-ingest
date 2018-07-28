@@ -26,7 +26,7 @@ func Do(request events.APIGatewayProxyRequest, p persistence.MetadataGetter, s s
 
 func respond(metadataRecord model.Metadata, metadataContent string, err error) (events.APIGatewayProxyResponse, error) {
 	if err != nil {
-		utils.RespondToInternalError(err)
+		return utils.RespondToError(err)
 	}
 	headers := map[string]string{
 		"Content-Type": "application/json; schema=\"" + metadataRecord.DescribedBy + "\"",

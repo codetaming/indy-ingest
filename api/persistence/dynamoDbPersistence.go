@@ -149,12 +149,9 @@ func (DynamoPersistence) GetDataset(datasetId string) (model.Dataset, error) {
 		},
 	})
 	if err != nil {
-		log.Println("Error retrieving:" + err.Error())
 		return dataset, err
 	}
-	log.Println("Found:" + string(len(result.Item)))
 	if len(result.Item) == 0 {
-		log.Println("Not found:" + datasetId)
 		return dataset, &NotFoundError{datasetId}
 	}
 	err = dynamodbattribute.UnmarshalMap(result.Item, &dataset)
@@ -162,14 +159,12 @@ func (DynamoPersistence) GetDataset(datasetId string) (model.Dataset, error) {
 		log.Println("Error unmarshalling:" + err.Error())
 		return dataset, err
 	}
-	log.Println("Returning dataset successfully")
 	return dataset, nil
 }
 
 func (DynamoPersistence) GetMetadata(datasetId string, metadataId string) (model.Metadata, error) {
-	var (
-		tableName = aws.String(os.Getenv(metadataTableEnv))
-	)
+	var tableName = aws.String(os.Getenv(metadataTableEnv))
+	var metadata model.Metadata
 	result, err := ddb.GetItem(&dynamodb.GetItemInput{
 		TableName: tableName,
 		Key: map[string]*dynamodb.AttributeValue{
@@ -183,11 +178,18 @@ func (DynamoPersistence) GetMetadata(datasetId string, metadataId string) (model
 	})
 	log.Print("table: " + os.Getenv(metadataTableEnv))
 	log.Print("dataset_id: " + datasetId + ", metadata_id: " + metadataId)
+
 	if err != nil {
-		return model.Metadata{}, err
+		return metadata, err
 	}
-	metadata := model.Metadata{}
+	if len(result.Item) == 0 {
+		return metadata, &NotFoundError{metadataId}
+	}
 	err = dynamodbattribute.UnmarshalMap(result.Item, &metadata)
+	if err != nil {
+		log.Println("Error unmarshalling:" + err.Error())
+		return metadata, err
+	}
 	return metadata, nil
 
 }
