@@ -13,6 +13,12 @@ import (
 
 type DynamoPersistence struct{}
 
+type NotFoundError struct {
+	msg string
+}
+
+func (e *NotFoundError) Error() string { return e.msg }
+
 var ddb *dynamodb.DynamoDB
 
 const datasetTableEnv = "DATASET_TABLE"
@@ -150,6 +156,9 @@ func (DynamoPersistence) GetDataset(datasetId string) (model.Dataset, error) {
 	if err != nil {
 		log.Println("Error unmarshalling:" + err.Error())
 		return dataset, err
+	}
+	if dataset.DatasetId == "" {
+		return dataset, &NotFoundError{datasetId}
 	}
 	log.Println("Returning dataset successfully")
 	return dataset, nil

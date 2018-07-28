@@ -21,7 +21,12 @@ func Do(request events.APIGatewayProxyRequest, p persistence.DatasetGetter) (eve
 
 func respond(dataset model.Dataset, err error) (events.APIGatewayProxyResponse, error) {
 	if err != nil {
-		utils.RespondToInternalError(err)
+		switch _ := err.(type) {
+		default:
+			utils.RespondToInternalError(err)
+		case *persistence.NotFoundError:
+			utils.RespondToNotFound(err.Error())
+		}
 	}
 	body, _ := json.Marshal(dataset)
 	return events.APIGatewayProxyResponse{
