@@ -143,15 +143,15 @@ func (DynamoPersistence) GetDataset(datasetId string) (model.Dataset, error) {
 		},
 	})
 	if err != nil {
-		println("Error retrieving:" + err.Error())
+		log.Println("Error retrieving:" + err.Error())
 		return dataset, err
 	}
 	err = dynamodbattribute.UnmarshalMap(result.Item, &dataset)
 	if err != nil {
-		println("Error unmarshalling:" + err.Error())
+		log.Println("Error unmarshalling:" + err.Error())
 		return dataset, err
 	}
-	println("Returning dataset successfully")
+	log.Println("Returning dataset successfully")
 	return dataset, nil
 }
 
