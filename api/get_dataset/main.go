@@ -7,6 +7,7 @@ import (
 	"github.com/codetaming/indy-ingest/api/model"
 	"github.com/codetaming/indy-ingest/api/persistence"
 	"github.com/codetaming/indy-ingest/api/utils"
+	"log"
 )
 
 //AWS Lambda entry point
@@ -21,11 +22,12 @@ func Do(request events.APIGatewayProxyRequest, p persistence.DatasetGetter) (eve
 
 func respond(dataset model.Dataset, err error) (events.APIGatewayProxyResponse, error) {
 	if err != nil {
-		switch _ := err.(type) {
+		switch t := err.(type) {
 		default:
 			utils.RespondToInternalError(err)
 		case *persistence.NotFoundError:
 			utils.RespondToNotFound(err.Error())
+			log.Println("NotFoundError", t)
 		}
 	}
 	body, _ := json.Marshal(dataset)
