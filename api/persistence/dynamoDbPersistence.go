@@ -150,6 +150,7 @@ func (DynamoPersistence) GetDataset(datasetId string) (model.Dataset, error) {
 	if err != nil {
 		return dataset, err
 	}
+	println("Returning dataset successfully")
 	return dataset, nil
 }
 
