@@ -16,7 +16,6 @@ func RespondToError(err error) (events.APIGatewayProxyResponse, error) {
 	default:
 		return RespondToInternalError(err)
 	}
-	return RespondToInternalError(err)
 }
 
 func RespondToInternalError(err error) (events.APIGatewayProxyResponse, error) {
