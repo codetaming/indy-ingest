@@ -11,8 +11,8 @@ import (
 func RespondToError(err error) (events.APIGatewayProxyResponse, error) {
 	switch t := err.(type) {
 	case *persistence.NotFoundError:
-		return RespondToNotFound(err.Error())
 		log.Println("NotFoundError", t)
+		return RespondToNotFound(err.Error())
 	default:
 		return RespondToInternalError(err)
 	}
