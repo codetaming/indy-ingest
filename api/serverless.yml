@@ -1,7 +1,7 @@
 service: indy-ingest
 
 plugins:
-- serverless-export-swagger
+# - serverless-export-swagger
 
 custom:
   swaggerDestinations:
