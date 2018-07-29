@@ -5,8 +5,9 @@ plugins:
 
 custom:
   swaggerDestinations:
-    s3BucketName: "${self:service}--${opt:stage, self:provider.stage}-swagger"
-    s3KeyName: "swagger.json"
+    s3BucketName: 'indy-ingest-swagger-1'
+    s3KeyName: 'swagger/api.json'
+    acl: public-read
 
 provider:
   name: aws
