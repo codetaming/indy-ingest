@@ -1,5 +1,13 @@
 service: indy-ingest
 
+plugins:
+- serverless-export-swagger
+
+custom:
+  swaggerDestinations:
+    s3BucketName: "${self:service}-{swagger}"
+    s3KeyName: "${self:service}-${opt:stage, self:provider.stage}-swagger.json"
+
 provider:
   name: aws
   runtime: go1.x
