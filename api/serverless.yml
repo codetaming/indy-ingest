@@ -5,8 +5,8 @@ plugins:
 
 custom:
   swaggerDestinations:
-    s3BucketName: "${self:service}-{swagger}"
-    s3KeyName: "${self:service}-${opt:stage, self:provider.stage}-swagger.json"
+    s3BucketName: "${self:service}--${opt:stage, self:provider.stage}-swagger"
+    s3KeyName: "swagger.json"
 
 provider:
   name: aws
