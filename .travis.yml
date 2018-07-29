@@ -18,9 +18,6 @@ matrix:
     - go: tip
   fast_finish: true
 
-notifications:
-  email: false
-
 before_script:
   - PKGS=$(go list ./...)
   - LINT_PKGS=$(go list ./... | grep -Ev 'aws-lambda-go/lambda')

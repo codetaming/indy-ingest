@@ -31,7 +31,6 @@ func init() {
 
 func (S3Storage) StoreMetadata(key string, bodyJson string) (string, error) {
 	contentType := "application/json"
-	log.Printf("Uploading file to S3: " + key)
 	upParams := &s3manager.UploadInput{
 		Bucket:      aws.String(os.Getenv("METADATA_BUCKET")),
 		ContentType: &contentType,
