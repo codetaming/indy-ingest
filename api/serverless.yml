@@ -3,7 +3,7 @@ service: indy-ingest
 frameworkVersion: ">=1.0.0 <2.0.0"
 
 plugins:
-- serverless-export-swagger
+#- serverless-export-swagger
 
 custom:
   swaggerDestinations:
