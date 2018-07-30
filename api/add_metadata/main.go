@@ -5,6 +5,7 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/codetaming/indy-ingest/api/model"
+	"github.com/codetaming/indy-ingest/api/notification"
 	"github.com/codetaming/indy-ingest/api/persistence"
 	"github.com/codetaming/indy-ingest/api/storage"
 	"github.com/codetaming/indy-ingest/api/utils"
@@ -18,11 +19,12 @@ import (
 func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	p := new(persistence.DynamoPersistence)
 	s := new(storage.S3Storage)
-	return Do(request, p, p, s)
+	n := new(notification.SNSNotification)
+	return Do(request, p, p, s, n)
 }
 
 //Do executes the function allowing dependencies to be specified
-func Do(request events.APIGatewayProxyRequest, dec persistence.DatasetExistenceChecker, mp persistence.MetadataPersister, ms storage.MetadataStorer) (events.APIGatewayProxyResponse, error) {
+func Do(request events.APIGatewayProxyRequest, dec persistence.DatasetExistenceChecker, mp persistence.MetadataPersister, ms storage.MetadataStorer, mcn notification.MetadataCreatedNotifier) (events.APIGatewayProxyResponse, error) {
 	datasetId := request.PathParameters["datasetId"]
 	_, err := checkDatasetExists(datasetId, dec)
 
@@ -60,8 +62,10 @@ func Do(request events.APIGatewayProxyRequest, dec persistence.DatasetExistenceC
 			File: fileLocation,
 		}
 		baseUrl := os.Getenv("BASE_URL")
-		headers["Location"] = baseUrl + "/dataset/" + datasetId + "/metadata/" + metadataId
+		metadataUrl := baseUrl + "/dataset/" + datasetId + "/metadata/" + metadataId
+		headers["Location"] = metadataUrl
 		jsonMetadataSuccessMessage, _ := json.Marshal(metadataSuccessMessage)
+		mcn.NotifyMetadataCreated(metadataUrl)
 		return events.APIGatewayProxyResponse{
 			Headers:    headers,
 			Body:       string(jsonMetadataSuccessMessage),
