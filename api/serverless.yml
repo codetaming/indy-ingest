@@ -3,7 +3,7 @@ service: indy-ingest
 frameworkVersion: ">=1.0.0 <2.0.0"
 
 plugins:
-# - serverless-export-swagger
+- serverless-export-swagger
 
 custom:
   swaggerDestinations:
@@ -20,85 +20,85 @@ provider:
     DATASET_TABLE: "${self:service}-${opt:stage, self:provider.stage}-dataset"
     METADATA_TABLE: "${self:service}-${opt:stage, self:provider.stage}-metadata"
     METADATA_BUCKET: "${self:service}-${opt:stage, self:provider.stage}-metadata"
-    BASE_URL: { "Fn::Join" : ["", [" https://", { "Ref" : "ApiGatewayRestApi" }, ".execute-api.${opt:region, self:provider.region}.amazonaws.com/${opt:stage, self:provider.stage}" ] ]  }
+    BASE_URL: { "Fn::Join": ["", [" https://", { "Ref": "ApiGatewayRestApi" }, ".execute-api.${opt:region, self:provider.region}.amazonaws.com/${opt:stage, self:provider.stage}" ] ]  }
   iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - dynamodb:GetItem
-        - dynamodb:PutItem
-        - dynamodb:Query
-      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DATASET_TABLE}"
-    - Effect: Allow
-      Action:
-        - dynamodb:GetItem
-        - dynamodb:PutItem
-      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.METADATA_TABLE}"
-    - Effect: Allow
-      Action:
-        - s3:GetObject
-        - s3:PutObject
-      Resource: "arn:aws:s3:::${self:provider.environment.METADATA_BUCKET}/*"
+  - Effect: Allow
+    Action:
+    - dynamodb:GetItem
+    - dynamodb:PutItem
+    - dynamodb:Query
+    Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DATASET_TABLE}"
+  - Effect: Allow
+    Action:
+    - dynamodb:GetItem
+    - dynamodb:PutItem
+    Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.METADATA_TABLE}"
+  - Effect: Allow
+    Action:
+    - s3:GetObject
+    - s3:PutObject
+    Resource: "arn:aws:s3:::${self:provider.environment.METADATA_BUCKET}/*"
 
 package:
- exclude:
-   - ./**
- include:
-   - ./bin/**
+  exclude:
+  - ./**
+  include:
+  - ./bin/**
 
 functions:
   create-dataset:
     handler: bin/create_dataset
     events:
-      - http:
-          path: dataset
-          method: post
+    - http:
+        path: dataset
+        method: post
   list-datasets:
     handler: bin/list_datasets
     events:
-      - http:
-          path: dataset
-          method: get
+    - http:
+        path: dataset
+        method: get
   get-dataset:
     handler: bin/get_dataset
     events:
-      - http:
-          path: dataset/{datasetId}
-          method: get
-          request:
-            parameters:
-              paths:
-              datasetId: true
+    - http:
+        path: dataset/{datasetId}
+        method: get
+        request:
+          parameters:
+            paths:
+            datasetId: true
   add-metadata:
     handler: bin/add_metadata
     events:
-      - http:
-          path: dataset/{datasetId}/metadata
-          method: post
-          request:
-            parameters:
-              paths:
-              datasetId: true
+    - http:
+        path: dataset/{datasetId}/metadata
+        method: post
+        request:
+          parameters:
+            paths:
+            datasetId: true
   list-metadata:
     handler: bin/dummy
     events:
-      - http:
-          path: dataset/{datasetId}/metadata
-          method: get
-          request:
-            parameters:
-              paths:
-              datasetId: true
+    - http:
+        path: dataset/{datasetId}/metadata
+        method: get
+        request:
+          parameters:
+            paths:
+            datasetId: true
   get-metadata:
     handler: bin/get_metadata
     events:
-      - http:
-          path: dataset/{datasetId}/metadata/{metadataId}
-          method: get
-          request:
-            parameters:
-              paths:
-                datasetId: true
-                metadataId: true
+    - http:
+        path: dataset/{datasetId}/metadata/{metadataId}
+        method: get
+        request:
+          parameters:
+            paths:
+              datasetId: true
+              metadataId: true
   validate:
     handler: bin/validate
     events:
@@ -113,15 +113,15 @@ resources:
       Properties:
         TableName: ${self:provider.environment.DATASET_TABLE}
         AttributeDefinitions:
-          - AttributeName: owner
-            AttributeType: S
-          - AttributeName: dataset_id
-            AttributeType: S
+        - AttributeName: owner
+          AttributeType: S
+        - AttributeName: dataset_id
+          AttributeType: S
         KeySchema:
-          - AttributeName: owner
-            KeyType: HASH
-          - AttributeName: dataset_id
-            KeyType: RANGE
+        - AttributeName: owner
+          KeyType: HASH
+        - AttributeName: dataset_id
+          KeyType: RANGE
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
@@ -130,15 +130,15 @@ resources:
       Properties:
         TableName: ${self:provider.environment.METADATA_TABLE}
         AttributeDefinitions:
-          - AttributeName: dataset_id
-            AttributeType: S
-          - AttributeName: metadata_id
-            AttributeType: S
+        - AttributeName: dataset_id
+          AttributeType: S
+        - AttributeName: metadata_id
+          AttributeType: S
         KeySchema:
-          - AttributeName: dataset_id
-            KeyType: HASH
-          - AttributeName: metadata_id
-            KeyType: RANGE
+        - AttributeName: dataset_id
+          KeyType: HASH
+        - AttributeName: metadata_id
+          KeyType: RANGE
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
@@ -153,9 +153,9 @@ resources:
         Bucket: ${self:provider.environment.METADATA_BUCKET}
         PolicyDocument:
           Statement:
-            - Principal: "*"
-              Action:
-                - s3:GetObject
-              Effect: Allow
-              Sid: "AddPerm"
-              Resource: "arn:aws:s3:::${self:provider.environment.METADATA_BUCKET}/*"
+          - Principal: "*"
+            Action:
+            - s3:GetObject
+            Effect: Allow
+            Sid: "AddPerm"
+            Resource: "arn:aws:s3:::${self:provider.environment.METADATA_BUCKET}/*"
