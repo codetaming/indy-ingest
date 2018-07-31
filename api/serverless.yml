@@ -25,13 +25,13 @@ provider:
       Fn::Join:
       - ""
       - - "arn:aws:sns:"
-      - Ref: "AWS::Region"
-      - ":"
-      - Ref: "AWS::AccountId"
-      - ":"
-      - ${self:service}
-      - "-"
-      - ${self:custom.events.metadata-created}
+        - Ref: "AWS::Region"
+        - ":"
+        - Ref: "AWS::AccountId"
+        - ":"
+        - ${self:service}
+        - "-"
+        - ${self:custom.events.metadata-created}
     BASE_URL: { "Fn::Join": ["", [" https://", { "Ref": "ApiGatewayRestApi" }, ".execute-api.${opt:region, self:provider.region}.amazonaws.com/${opt:stage, self:provider.stage}" ] ]  }
   iamRoleStatements:
   - Effect: Allow
