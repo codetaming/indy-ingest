@@ -31,6 +31,9 @@ func (SnsPublication) PublishMetadataCreated(metadataUrl string) (err error) {
 		TopicArn: aws.String(topic),
 	}
 	resp, err := snsSvc.Publish(params)
+	if err != nil {
+		log.Printf(err.Error())
+	}
 	log.Println(resp.MessageId)
-	return nil
+	return err
 }
