@@ -175,3 +175,7 @@ resources:
             Effect: Allow
             Sid: "AddPerm"
             Resource: "arn:aws:s3:::${self:provider.environment.METADATA_BUCKET}/*"
+    MetadataCreated:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: ${self:service}-${self:custom.events.metadata-created}
