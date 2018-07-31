@@ -5,8 +5,8 @@ import (
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/codetaming/indy-ingest/api/add_metadata"
-	"github.com/codetaming/indy-ingest/api/notification"
 	"github.com/codetaming/indy-ingest/api/persistence"
+	"github.com/codetaming/indy-ingest/api/publication"
 	"github.com/codetaming/indy-ingest/api/storage"
 	"github.com/stretchr/testify/assert"
 )
@@ -104,13 +104,13 @@ func TestHandler(t *testing.T) {
 func ErroredHandler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	p := new(persistence.ErroredPersistence)
 	s := new(storage.MockStorage)
-	n := new(notification.MockNotification)
-	return main.Do(request, p, p, s, n)
+	pub := new(publication.MockPublication)
+	return main.Do(request, p, p, s, pub)
 }
 
 func MockHandler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	p := new(persistence.MockPersistence)
 	s := new(storage.MockStorage)
-	n := new(notification.MockNotification)
-	return main.Do(request, p, p, s, n)
+	pub := new(publication.MockPublication)
+	return main.Do(request, p, p, s, pub)
 }

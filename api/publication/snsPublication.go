@@ -1,14 +1,15 @@
-package notification
+package publication
 
 import (
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sns"
+	"log"
 	"os"
 )
 
-type SNSNotification struct{}
+type SnsPublication struct{}
 
 var snsSvc *sns.SNS
 
@@ -23,6 +24,13 @@ func init() {
 	}
 }
 
-func (SNSNotification) NotifyMetadataCreated(metadataUrl string) (err error) {
+func (SnsPublication) PublishMetadataCreated(metadataUrl string) (err error) {
+	topic := os.Getenv("SNS_METADATA_CREATED")
+	params := &sns.PublishInput{
+		Message:  aws.String(metadataUrl),
+		TopicArn: aws.String(topic),
+	}
+	resp, err := snsSvc.Publish(params)
+	log.Println(resp.MessageId)
 	return nil
 }
