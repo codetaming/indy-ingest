@@ -33,5 +33,5 @@ func TestHandlerForCreateDataset(t *testing.T) {
 }
 
 func MockHandler(_ events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	return main.Do(new(persistence.MockPersistence))
+	return Do(new(persistence.MockPersistence))
 }

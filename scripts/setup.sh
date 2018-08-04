@@ -4,5 +4,5 @@ chmod +x $GOPATH/bin/dep
 cd serverless
 npm install
 cd ..
-dep ensure
+$GOPATH/bin/dep ensure
 make

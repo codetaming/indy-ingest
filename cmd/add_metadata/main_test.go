@@ -104,12 +104,12 @@ func ErroredHandler(request events.APIGatewayProxyRequest) (events.APIGatewayPro
 	p := new(persistence.ErroredPersistence)
 	s := new(storage.MockStorage)
 	pub := new(publication.MockPublication)
-	return main.Do(request, p, p, s, pub)
+	return Do(request, p, p, s, pub)
 }
 
 func MockHandler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	p := new(persistence.MockPersistence)
 	s := new(storage.MockStorage)
 	pub := new(publication.MockPublication)
-	return main.Do(request, p, p, s, pub)
+	return Do(request, p, p, s, pub)
 }

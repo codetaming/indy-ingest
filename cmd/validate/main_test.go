@@ -62,7 +62,7 @@ func TestHandler(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		response, err := main.Handler(test.request)
+		response, err := Handler(test.request)
 		assert.IsType(t, test.err, err)
 		assert.Equal(t, test.expect, response.Body)
 	}
