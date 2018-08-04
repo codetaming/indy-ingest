@@ -2,20 +2,17 @@
 
 
 [[projects]]
-  digest = "1:6c8d51660e50d38116fe8c29eefc00ce856300329993980f7ce7333a522a6a99"
   name = "github.com/aws/aws-lambda-go"
   packages = [
     "events",
     "lambda",
     "lambda/messages",
-    "lambdacontext",
+    "lambdacontext"
   ]
-  pruneopts = "UT"
   revision = "4d30d0ff60440c2d0480a15747c96ee71c3c53d4"
   version = "v1.2.0"
 
 [[projects]]
-  digest = "1:0be0e40188f4cb19bccc8d53df697ba3f82be4a65ecf7f1a5b57e4a6705192f6"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -55,130 +52,88 @@
     "service/s3/s3iface",
     "service/s3/s3manager",
     "service/sns",
-    "service/sts",
+    "service/sts"
   ]
-  pruneopts = "UT"
   revision = "123c8c8326730972861f45fe2e6e7b1d64b4d487"
   version = "v1.15.1"
 
 [[projects]]
-  digest = "1:a2c1d0e43bd3baaa071d1b9ed72c27d78169b2b269f71c105ac4ba34b1be4a39"
   name = "github.com/davecgh/go-spew"
   packages = ["spew"]
-  pruneopts = "UT"
   revision = "346938d642f2ec3594ed81d874461961cd0faa76"
   version = "v1.1.0"
 
 [[projects]]
   branch = "master"
-  digest = "1:dbc01e5067993535c923a2089b4949255993223ce004790aa134b64aef0f79a2"
   name = "github.com/fnproject/fdk-go"
   packages = [
     ".",
-    "utils",
+    "utils"
   ]
-  pruneopts = "UT"
   revision = "1eb29530716f262bad5b83eb9a5b3f7483636949"
 
 [[projects]]
-  digest = "1:fe8a03a8222d5b913f256972933d26d24ad7c8286692a42943bc01633cc8fce3"
   name = "github.com/go-ini/ini"
   packages = ["."]
-  pruneopts = "UT"
   revision = "358ee7663966325963d4e8b2e1fbd570c5195153"
   version = "v1.38.1"
 
 [[projects]]
-  digest = "1:8f8811f9be822914c3a25c6a071e93beb4c805d7b026cbf298bc577bc1cc945b"
   name = "github.com/google/uuid"
   packages = ["."]
-  pruneopts = "UT"
   revision = "064e2069ce9c359c118179501254f67d7d37ba24"
   version = "0.2"
 
 [[projects]]
-  digest = "1:e22af8c7518e1eab6f2eab2b7d7558927f816262586cd6ed9f349c97a6c285c4"
   name = "github.com/jmespath/go-jmespath"
   packages = ["."]
-  pruneopts = "UT"
   revision = "0b12d6b5"
 
 [[projects]]
-  digest = "1:40e195917a951a8bf867cd05de2a46aaf1806c50cf92eebf4c16f78cd196f747"
   name = "github.com/pkg/errors"
   packages = ["."]
-  pruneopts = "UT"
   revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
   version = "v0.8.0"
 
 [[projects]]
-  digest = "1:0028cb19b2e4c3112225cd871870f2d9cf49b9b4276531f03438a88e94be86fe"
   name = "github.com/pmezard/go-difflib"
   packages = ["difflib"]
-  pruneopts = "UT"
   revision = "792786c7400a136282c1664665ae0a8db921c6c2"
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:18752d0b95816a1b777505a97f71c7467a8445b8ffb55631a7bf779f6ba4fa83"
   name = "github.com/stretchr/testify"
   packages = ["assert"]
-  pruneopts = "UT"
   revision = "f35b8ab0b5a2cef36673838d662e249dd9c94686"
   version = "v1.2.2"
 
 [[projects]]
-  digest = "1:2d4fb9b356677993030586c4f45809943769647e3f863327ebdabe80f3dc768c"
   name = "github.com/tomnomnom/linkheader"
   packages = ["."]
-  pruneopts = "UT"
   revision = "6953a30d444317754766fccdd3f7f000edc874f6"
   version = "0.1.0"
 
 [[projects]]
   branch = "master"
-  digest = "1:f4e5276a3b356f4692107047fd2890f2fe534f4feeb6b1fd2f6dfbd87f1ccf54"
   name = "github.com/xeipuuv/gojsonpointer"
   packages = ["."]
-  pruneopts = "UT"
   revision = "4e3ac2762d5f479393488629ee9370b50873b3a6"
 
 [[projects]]
   branch = "master"
-  digest = "1:dc6a6c28ca45d38cfce9f7cb61681ee38c5b99ec1425339bfc1e1a7ba769c807"
   name = "github.com/xeipuuv/gojsonreference"
   packages = ["."]
-  pruneopts = "UT"
   revision = "bd5ef7bd5415a7ac448318e64f11a24cd21e594b"
 
 [[projects]]
   branch = "master"
-  digest = "1:4619323e30a9fb5776cf5303ee80b1cf3b7a52561f1f0cc534a37a94f5a2fdc3"
   name = "github.com/xeipuuv/gojsonschema"
   packages = ["."]
-  pruneopts = "UT"
   revision = "b84684d0e066369f2a7a8a525f3080909ed4ea6b"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  input-imports = [
-    "github.com/aws/aws-lambda-go/events",
-    "github.com/aws/aws-lambda-go/lambda",
-    "github.com/aws/aws-sdk-go/aws",
-    "github.com/aws/aws-sdk-go/aws/awserr",
-    "github.com/aws/aws-sdk-go/aws/session",
-    "github.com/aws/aws-sdk-go/service/dynamodb",
-    "github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute",
-    "github.com/aws/aws-sdk-go/service/s3",
-    "github.com/aws/aws-sdk-go/service/s3/s3manager",
-    "github.com/aws/aws-sdk-go/service/sns",
-    "github.com/fnproject/fdk-go",
-    "github.com/google/uuid",
-    "github.com/pkg/errors",
-    "github.com/stretchr/testify/assert",
-    "github.com/tomnomnom/linkheader",
-    "github.com/xeipuuv/gojsonschema",
-  ]
+  inputs-digest = "cdd91ac9758747bd405e9284fa22b86b33e5d565b37c9c933543a7eb77dd9543"
   solver-name = "gps-cdcl"
   solver-version = 1

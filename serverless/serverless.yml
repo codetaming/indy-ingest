@@ -57,9 +57,9 @@ provider:
 
 package:
   exclude:
-  - ./**
+  - ../**
   include:
-  - ./bin/**
+  - ../bin/**
 
 functions:
   create-dataset:
