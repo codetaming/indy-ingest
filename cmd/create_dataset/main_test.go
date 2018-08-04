@@ -3,8 +3,6 @@ package main
 import (
 	"testing"
 
-	"github.com/codetaming/indy-ingest/cmd/create_dataset"
-
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/codetaming/indy-ingest/internal/persistence"
 	"github.com/stretchr/testify/assert"

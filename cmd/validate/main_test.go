@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/aws/aws-lambda-go/events"
-	"github.com/codetaming/indy-ingest/cmd/validate"
 	"github.com/stretchr/testify/assert"
 )
 

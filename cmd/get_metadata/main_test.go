@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/aws/aws-lambda-go/events"
-	"github.com/codetaming/indy-ingest/cmd/get_metadata"
 	"github.com/codetaming/indy-ingest/internal/persistence"
 	"github.com/codetaming/indy-ingest/internal/storage"
 	"github.com/stretchr/testify/assert"

@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/aws/aws-lambda-go/events"
-	"github.com/codetaming/indy-ingest/cmd/add_metadata"
 	"github.com/codetaming/indy-ingest/internal/persistence"
 	"github.com/codetaming/indy-ingest/internal/publication"
 	"github.com/codetaming/indy-ingest/internal/storage"
