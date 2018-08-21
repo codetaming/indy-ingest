@@ -63,19 +63,19 @@ package:
 
 functions:
   create-dataset:
-    handler: ../bin/create_dataset
+    handler: bin/create_dataset
     events:
     - http:
         path: dataset
         method: post
   list-datasets:
-    handler: ../bin/list_datasets
+    handler: bin/list_datasets
     events:
     - http:
         path: dataset
         method: get
   get-dataset:
-    handler: ../bin/get_dataset
+    handler: bin/get_dataset
     events:
     - http:
         path: dataset/{datasetId}
@@ -85,7 +85,7 @@ functions:
             paths:
             datasetId: true
   add-metadata:
-    handler: ../bin/add_metadata
+    handler: bin/add_metadata
     events:
     - http:
         path: dataset/{datasetId}/metadata
@@ -95,7 +95,7 @@ functions:
             paths:
             datasetId: true
   list-metadata:
-    handler: ../bin/dummy
+    handler: bin/dummy
     events:
     - http:
         path: dataset/{datasetId}/metadata
@@ -105,7 +105,7 @@ functions:
             paths:
             datasetId: true
   get-metadata:
-    handler: ../bin/get_metadata
+    handler: bin/get_metadata
     events:
     - http:
         path: dataset/{datasetId}/metadata/{metadataId}
@@ -116,7 +116,7 @@ functions:
               datasetId: true
               metadataId: true
   validate:
-    handler: ../bin/validate
+    handler: bin/validate
     events:
     - http:
         path: validate
