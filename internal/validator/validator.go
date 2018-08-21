@@ -4,12 +4,9 @@ import (
 	"github.com/codetaming/indy-ingest/internal/model"
 	"github.com/pkg/errors"
 	"github.com/xeipuuv/gojsonschema"
-	"log"
 )
 
 func Validate(schemaUrl string, bodyJson string) (model.ValidationResult, error) {
-	log.Print("schemaUrl: " + schemaUrl)
-
 	if schemaUrl == "" {
 		return model.ValidationResult{}, errors.New("Schema URL cannot be empty")
 	}

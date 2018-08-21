@@ -17,8 +17,6 @@ var (
 func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	log.Print(request)
 
-	headers := map[string]string{"Content-Type": "application/json"}
-
 	if len(request.Body) < 1 {
 		return events.APIGatewayProxyResponse{}, ErrMetadataNotProvided
 	}
@@ -43,7 +41,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	}
 
 	return events.APIGatewayProxyResponse{
-		Headers:    headers,
+		Headers:    map[string]string{"Content-Type": "application/json"},
 		Body:       string(body),
 		StatusCode: 200,
 	}, nil
