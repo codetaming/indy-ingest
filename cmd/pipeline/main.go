@@ -4,14 +4,8 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
-	"io/ioutil"
 	"os"
 )
-
-type SampleSet struct {
-	XMLName xml.Name `xml:"SAMPLE_SET"`
-	Samples []Sample `xml:"SAMPLE"`
-}
 
 type Sample struct {
 	Title            string            `xml:"TITLE" json:"name"`
@@ -25,25 +19,37 @@ type SampleAttribute struct {
 }
 
 func main() {
+	streamingParse()
+}
+
+func streamingParse() {
 	xmlFile, err := os.Open("data/ena-samples.xml")
 	if err != nil {
 		fmt.Println(err)
 	}
 	defer xmlFile.Close()
-	byteValue, _ := ioutil.ReadAll(xmlFile)
-
-	var sampleSet SampleSet
-
-	err = xml.Unmarshal(byteValue, &sampleSet)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	for _, sample := range sampleSet.Samples {
-		b, err := json.Marshal(sample)
-		if err != nil {
-			fmt.Println("error:", err)
+	decoder := xml.NewDecoder(xmlFile)
+	total := 0
+	var inElement string
+	for {
+		t, _ := decoder.Token()
+		if t == nil {
+			break
 		}
-		os.Stdout.Write(b)
+		switch se := t.(type) {
+		case xml.StartElement:
+			inElement = se.Name.Local
+			if inElement == "SAMPLE" {
+				var s Sample
+				decoder.DecodeElement(&s, &se)
+				b, err := json.Marshal(s)
+				if err != nil {
+					fmt.Println("error:", err)
+				}
+				os.Stdout.Write(b)
+				total++
+			}
+		}
 	}
+	fmt.Printf("\n%d samples", total)
 }
