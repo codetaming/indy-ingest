@@ -24,5 +24,5 @@ Creates and API for submission and validation of JSON via API Gateway and Lambda
 *Setup and Build*
 Requires [npm](https://docs.npmjs.com/cli/install) for serverless framework and [Go](https://golang.org/dl/) with [dep](https://github.com/golang/dep) for code.
 
-Run `setup.sh` to resolve dependencies and build.
+Run `./scripts/setup.sh` to resolve dependencies and build.
 
