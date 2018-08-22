@@ -1,20 +1,13 @@
-package main
+package handlers
 
 import (
 	"encoding/json"
 	"github.com/codetaming/indy-ingest/internal/utils"
 	"github.com/codetaming/indy-ingest/internal/validator"
-	"github.com/gorilla/mux"
 	"io/ioutil"
 	"log"
 	"net/http"
 )
-
-func main() {
-	router := mux.NewRouter()
-	router.HandleFunc("/validate", Validate).Methods("POST")
-	log.Fatal(http.ListenAndServe(":8000", router))
-}
 
 func Validate(writer http.ResponseWriter, request *http.Request) {
 	schemaUrl, err := utils.ExtractSchemaUrlArray(request.Header)
