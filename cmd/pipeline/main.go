@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
@@ -13,14 +14,14 @@ type SampleSet struct {
 }
 
 type Sample struct {
-	Title      string            `xml:"TITLE"`
-	Attributes []SampleAttribute `xml:"SAMPLE_ATTRIBUTES"`
+	Title            string            `xml:"TITLE" json:"name"`
+	Accession        string            `xml:"accession,attr" json:"accession"`
+	SampleAttributes []SampleAttribute `xml:"SAMPLE_ATTRIBUTES>SAMPLE_ATTRIBUTE" json:"characteristics"`
 }
 
 type SampleAttribute struct {
-	XMLName xml.Name `xml:"SAMPLE_ATTRIBUTE"`
-	Tag     string   `xml:TAG`
-	Value   string   `xml:VALUE`
+	Tag   string `xml:"TAG" json:"tag"`
+	Value string `xml:"VALUE" json:"value"`
 }
 
 func main() {
@@ -28,7 +29,6 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println("Successfully Opened users.xml")
 	defer xmlFile.Close()
 	byteValue, _ := ioutil.ReadAll(xmlFile)
 
@@ -40,9 +40,10 @@ func main() {
 	}
 
 	for _, sample := range sampleSet.Samples {
-		fmt.Println(sample.Title)
-		for _, attribute := range sample.Attributes {
-			fmt.Printf(`%s:%s\n`, attribute.Tag, attribute.Value)
+		b, err := json.Marshal(sample)
+		if err != nil {
+			fmt.Println("error:", err)
 		}
+		os.Stdout.Write(b)
 	}
 }
