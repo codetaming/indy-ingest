@@ -1,0 +1,14 @@
+{
+  "$id": "https://example.com/sample.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Sample",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "accession": {
+      "type": "string"
+    }
+  }
+}
