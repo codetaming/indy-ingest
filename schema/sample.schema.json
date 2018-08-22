@@ -1,7 +1,13 @@
 {
-  "$id": "https://example.com/sample.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Sample",
+  "$id": "https://raw.githubusercontent.com/codetaming/indy-ingest/master/schema/sample.schema.json",
+  "additionalProperties": false,
+  "required": [
+    "name",
+    "accession",
+    "characteristics"
+  ],
+  "title": "sample",
   "type": "object",
   "properties": {
     "name": {
@@ -9,6 +15,25 @@
     },
     "accession": {
       "type": "string"
+    },
+    "characteristics": {
+      "type": "array",
+      "items": {
+        "additionalProperties": false,
+        "required": [
+          "tag",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "tag": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      }
     }
   }
 }
