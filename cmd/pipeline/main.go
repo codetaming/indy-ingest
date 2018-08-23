@@ -1,9 +1,13 @@
 package main
 
 import (
+	"bytes"
+	"compress/gzip"
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"os"
 )
 
@@ -23,17 +27,30 @@ func main() {
 }
 
 func streamingParse() {
-	xmlFile, err := os.Open("data/ena-samples.xml")
+	xmlFile, err := os.Open("data/sample.xml.gz")
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	gz, err := gzip.NewReader(xmlFile)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	defer xmlFile.Close()
-	decoder := xml.NewDecoder(xmlFile)
+	defer gz.Close()
+
+	decoder := xml.NewDecoder(gz)
 	total := 0
 	var inElement string
+	var b bytes.Buffer
+	w := gzip.NewWriter(&b)
+	limit := 1000000000
+	w.Write([]byte("["))
 	for {
 		t, _ := decoder.Token()
-		if t == nil {
+		if t == nil || total >= limit {
 			break
 		}
 		switch se := t.(type) {
@@ -42,14 +59,26 @@ func streamingParse() {
 			if inElement == "SAMPLE" {
 				var s Sample
 				decoder.DecodeElement(&s, &se)
-				b, err := json.Marshal(s)
+				jsonData, err := json.Marshal(s)
 				if err != nil {
 					fmt.Println("error:", err)
 				}
-				os.Stdout.Write(b)
+				w.Write(jsonData)
 				total++
+				if total < limit {
+					w.Write([]byte(",\n"))
+				}
+				if total%1000 == 0 {
+					fmt.Printf("%d\n", total)
+				}
 			}
 		}
+	}
+	w.Write([]byte("]"))
+	w.Close()
+	err = ioutil.WriteFile("samples.json.gz", b.Bytes(), 0666)
+	if err != nil {
+		log.Fatal(err)
 	}
 	fmt.Printf("\n%d samples", total)
 }
