@@ -1,7 +1,7 @@
-FROM alpine
+FROM armhf/alpine
 RUN apk update && apk add ca-certificates && rm -rf /var/cache/apk/*
 WORKDIR /app
-COPY /bin/ingest /app/ingestd
+COPY /bin/ingest-arm /app/ingestd
 WORKDIR /app
 
 EXPOSE 9000
