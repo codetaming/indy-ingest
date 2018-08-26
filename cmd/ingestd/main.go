@@ -18,7 +18,7 @@ func init() {
 func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/validate", handlers.Validate).Methods("POST")
-	router.HandleFunc("/dataset", handlers.Dummy).Methods("POST")
+	router.HandleFunc("/dataset", handlers.CreateDataset).Methods("POST")
 	router.HandleFunc("/dataset", handlers.ListDatasets).Methods("GET")
 	router.HandleFunc("/dataset/{datasetId}", handlers.Dummy).Methods("GET")
 	router.HandleFunc("/dataset/{datasetId}/metadata", handlers.Dummy).Methods("GET")
