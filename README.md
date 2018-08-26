@@ -55,4 +55,7 @@ docker push codetaming/ingest
 ```
 
 ## Uses
-* Gorilla MUX
+* Negroni : HTTP Middleware
+* Gorilla Mux : URL router and dispatcher
+* Envconfig : Configuration management
+* JWT Middleware : Token based authentication
