@@ -24,6 +24,10 @@ type DatasetGetter interface {
 	GetDataset(datasetId string) (model.Dataset, error)
 }
 
+type MetadataLister interface {
+	ListMetadata(datasetId string) ([]model.Metadata, error)
+}
+
 type MetadataGetter interface {
 	GetMetadata(datasetId string, metadataId string) (model.Metadata, error)
 }

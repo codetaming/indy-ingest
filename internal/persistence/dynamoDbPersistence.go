@@ -100,9 +100,7 @@ func (DynamoPersistence) CheckDatasetIdExists(datasetId string) (bool, error) {
 }
 
 func (DynamoPersistence) ListDatasets() ([]model.Dataset, error) {
-	var (
-		tableName = aws.String(os.Getenv(datasetTableEnv))
-	)
+	var tableName = aws.String(os.Getenv(datasetTableEnv))
 	var queryInput = &dynamodb.QueryInput{
 		TableName: tableName,
 		KeyConditions: map[string]*dynamodb.Condition{
@@ -152,6 +150,31 @@ func (DynamoPersistence) GetDataset(datasetId string) (model.Dataset, error) {
 		return dataset, err
 	}
 	return dataset, nil
+}
+
+func (DynamoPersistence) ListMetadata(datasetId string) ([]model.Metadata, error) {
+	var tableName = aws.String(os.Getenv(metadataTableEnv))
+	var queryInput = &dynamodb.QueryInput{
+		TableName: tableName,
+		KeyConditions: map[string]*dynamodb.Condition{
+			"dataset_id": {
+				ComparisonOperator: aws.String("EQ"),
+				AttributeValueList: []*dynamodb.AttributeValue{
+					{
+						S: aws.String(datasetId),
+					},
+				},
+			},
+		},
+	}
+	result, err := ddb.Query(queryInput)
+	if err != nil {
+		return nil, err
+	} else {
+		var metadata []model.Metadata
+		err = dynamodbattribute.UnmarshalListOfMaps(result.Items, &metadata)
+		return metadata, nil
+	}
 }
 
 func (DynamoPersistence) GetMetadata(datasetId string, metadataId string) (model.Metadata, error) {
