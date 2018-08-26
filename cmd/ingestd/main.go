@@ -13,6 +13,7 @@ func init() {
 	fmt.Println("AWS_REGION:", os.Getenv("AWS_REGION"))
 	fmt.Println("DATASET_TABLE:", os.Getenv("DATASET_TABLE"))
 	fmt.Println("METADATA_TABLE:", os.Getenv("METADATA_TABLE"))
+	fmt.Println("METADATA_BUCKET:", os.Getenv("METADATA_BUCKET"))
 }
 
 func main() {
@@ -21,6 +22,7 @@ func main() {
 	router.HandleFunc("/dataset", handlers.CreateDataset).Methods("POST")
 	router.HandleFunc("/dataset", handlers.ListDatasets).Methods("GET")
 	router.HandleFunc("/dataset/{datasetId}", handlers.Dummy).Methods("GET")
+	router.HandleFunc("/dataset/{datasetId}/metadata", handlers.AddMetadata).Methods("POST")
 	router.HandleFunc("/dataset/{datasetId}/metadata", handlers.Dummy).Methods("GET")
 	router.HandleFunc("/dataset/{datasetId}/metadata/{metadataId}", handlers.Dummy).Methods("GET")
 	log.Fatal(http.ListenAndServe(":9000", router))
