@@ -17,23 +17,7 @@
       "type": "string"
     },
     "characteristics": {
-      "type": "array",
-      "items": {
-        "additionalProperties": false,
-        "required": [
-          "tag",
-          "value"
-        ],
-        "type": "object",
-        "properties": {
-          "tag": {
-            "type": "string"
-          },
-          "value": {
-            "type": "string"
-          }
-        }
-      }
+      "type": "object"
     }
   }
 }

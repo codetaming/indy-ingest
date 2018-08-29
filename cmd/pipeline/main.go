@@ -11,15 +11,21 @@ import (
 	"os"
 )
 
-type Sample struct {
-	Title            string            `xml:"TITLE" json:"name"`
-	Accession        string            `xml:"accession,attr" json:"accession"`
-	SampleAttributes []SampleAttribute `xml:"SAMPLE_ATTRIBUTES>SAMPLE_ATTRIBUTE" json:"characteristics"`
+type XmlSample struct {
+	Title            string               `xml:"TITLE"`
+	Accession        string               `xml:"accession,attr" `
+	SampleAttributes []XmlSampleAttribute `xml:"SAMPLE_ATTRIBUTES>SAMPLE_ATTRIBUTE"`
 }
 
-type SampleAttribute struct {
-	Tag   string `xml:"TAG" json:"tag"`
-	Value string `xml:"VALUE" json:"value"`
+type XmlSampleAttribute struct {
+	Tag   string `xml:"TAG"`
+	Value string `xml:"VALUE"`
+}
+
+type JsonSample struct {
+	Title           string            `json:"name"`
+	Accession       string            `json:"accession"`
+	Characteristics map[string]string `json:"characteristics"`
 }
 
 func main() {
@@ -27,7 +33,7 @@ func main() {
 }
 
 func streamingParse() {
-	xmlFile, err := os.Open("data/sample.xml.gz")
+	xmlFile, err := os.Open("data/ena-samples.xml.gz")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -46,7 +52,7 @@ func streamingParse() {
 	var inElement string
 	var b bytes.Buffer
 	w := gzip.NewWriter(&b)
-	limit := 1000000000
+	limit := 1000
 	w.Write([]byte("["))
 	for {
 		t, _ := decoder.Token()
@@ -57,9 +63,10 @@ func streamingParse() {
 		case xml.StartElement:
 			inElement = se.Name.Local
 			if inElement == "SAMPLE" {
-				var s Sample
+				var s XmlSample
 				decoder.DecodeElement(&s, &se)
-				jsonData, err := json.Marshal(s)
+				js := convertToJson(s)
+				jsonData, err := json.Marshal(js)
 				if err != nil {
 					fmt.Println("error:", err)
 				}
@@ -76,9 +83,22 @@ func streamingParse() {
 	}
 	w.Write([]byte("]"))
 	w.Close()
-	err = ioutil.WriteFile("samples.json.gz", b.Bytes(), 0666)
+	err = ioutil.WriteFile("data/samples.json.gz", b.Bytes(), 0666)
 	if err != nil {
 		log.Fatal(err)
 	}
 	fmt.Printf("\n%d samples", total)
+}
+
+func convertToJson(xs XmlSample) JsonSample {
+	characteristics := make(map[string]string)
+	for _, sa := range xs.SampleAttributes {
+		characteristics[sa.Tag] = sa.Value
+	}
+	js := JsonSample{
+		Title:           xs.Title,
+		Accession:       xs.Accession,
+		Characteristics: characteristics,
+	}
+	return js
 }
