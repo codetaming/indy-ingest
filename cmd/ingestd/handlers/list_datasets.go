@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func ListDatasets(w http.ResponseWriter, _ *http.Request) {
+func ListDatasets(w http.ResponseWriter, r *http.Request) {
 	p := new(persistence.DynamoPersistence)
 	datasets, err := p.ListDatasets()
 	if err != nil {
