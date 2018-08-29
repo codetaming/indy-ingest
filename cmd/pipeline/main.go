@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
-	"io/ioutil"
+	"github.com/codetaming/indy-ingest/internal/load"
 	"log"
 	"os"
 )
@@ -53,7 +53,7 @@ func streamingParse() {
 	var b bytes.Buffer
 	w := gzip.NewWriter(&b)
 	limit := 1000
-	w.Write([]byte("["))
+	loader := load.NewFileLoader()
 	for {
 		t, _ := decoder.Token()
 		if t == nil || total >= limit {
@@ -70,7 +70,7 @@ func streamingParse() {
 				if err != nil {
 					fmt.Println("error:", err)
 				}
-				w.Write(jsonData)
+				loader.Load(jsonData)
 				total++
 				if total < limit {
 					w.Write([]byte(",\n"))
@@ -81,9 +81,7 @@ func streamingParse() {
 			}
 		}
 	}
-	w.Write([]byte("]"))
-	w.Close()
-	err = ioutil.WriteFile("data/samples.json.gz", b.Bytes(), 0666)
+	err = loader.Close()
 	if err != nil {
 		log.Fatal(err)
 	}
