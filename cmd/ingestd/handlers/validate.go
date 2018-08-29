@@ -9,27 +9,27 @@ import (
 	"net/http"
 )
 
-func Validate(writer http.ResponseWriter, request *http.Request) {
-	schemaUrl, err := utils.ExtractSchemaUrlArray(request.Header)
+func Validate(w http.ResponseWriter, r *http.Request) {
+	schemaUrl, err := utils.ExtractSchemaUrlArray(r.Header)
 	if err != nil {
-		http.Error(writer, err.Error(), 500)
+		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	b, err := ioutil.ReadAll(request.Body)
-	defer request.Body.Close()
+	b, err := ioutil.ReadAll(r.Body)
+	defer r.Body.Close()
 	if err != nil {
-		http.Error(writer, err.Error(), 500)
+		http.Error(w, err.Error(), 500)
 		return
 	}
 
 	result, err := validator.Validate(schemaUrl, string(b[:]))
 	if err != nil {
 		log.Print(err.Error())
-		http.Error(writer, err.Error(), 500)
+		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	writer.Header().Set("content-type", "application/json")
-	json.NewEncoder(writer).Encode(result)
+	w.Header().Set("content-type", "application/json")
+	json.NewEncoder(w).Encode(result)
 }

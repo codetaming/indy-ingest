@@ -26,3 +26,36 @@ Requires [npm](https://docs.npmjs.com/cli/install) for serverless framework and 
 
 Run `./scripts/setup.sh` to resolve dependencies and build.
 
+##Docker Build
+Run the make file
+```
+make
+```
+Build Docker image
+```
+docker build -f Dockerfile-arm -t codetaming/ingest-arm .
+docker build -f Dockerfile -t codetaming/ingest .
+```
+
+Run (Local)
+```
+docker run --publish 9000:9000 -t codetaming/ingest
+```
+
+Run (Pi)
+```
+docker run --publish 9000:9000 -t codetaming/ingest-arm
+```
+
+Push to Docker Hub
+```
+docker login
+docker push codetaming/ingest-arm
+docker push codetaming/ingest 
+```
+
+## Uses
+* Negroni : HTTP Middleware
+* Gorilla Mux : URL router and dispatcher
+* Envconfig : Configuration management
+* JWT Middleware : Token based authentication

@@ -8,4 +8,6 @@ build:
 	env GOOS=linux go build -ldflags="-s -w" -o bin/get_dataset cmd/serverless/get_dataset/main.go
 	env GOOS=linux go build -ldflags="-s -w" -o bin/get_metadata cmd/serverless/get_metadata/main.go
 	env GOOS=linux go build -ldflags="-s -w" -o bin/ingest cmd/ingestd/main.go
-	env go build -ldflags="-s -w" -o pipeline-osx cmd/pipeline/main.go
+	env GOOS=darwin GOARCH=amd64  go build -ldflags="-s -w" -o bin/ingest-osx cmd/ingestd/main.go
+	env GOOS=linux GOARCH=arm GOARM=7 go build -ldflags="-s -w" -o bin/ingest-arm cmd/ingestd/main.go
+	env GOOS=darwin GOARCH=amd64  go build -ldflags="-s -w" -o pipeline-osx cmd/pipeline/main.go
