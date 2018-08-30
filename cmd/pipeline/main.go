@@ -7,9 +7,12 @@ import (
 	"encoding/xml"
 	"flag"
 	"fmt"
+	"github.com/briandowns/spinner"
 	"io/ioutil"
 	"log"
 	"os"
+	"strconv"
+	"time"
 )
 
 type XmlSample struct {
@@ -67,6 +70,8 @@ func parse(inputFile string, outputFile string, limit int) {
 	var b bytes.Buffer
 	w := gzip.NewWriter(&b)
 	w.Write([]byte("["))
+	sp := spinner.New(spinner.CharSets[9], 100*time.Millisecond)
+	sp.Start()
 	for {
 		t, _ := decoder.Token()
 		if t == nil || (limit > 0 && total >= limit) {
@@ -84,16 +89,20 @@ func parse(inputFile string, outputFile string, limit int) {
 					fmt.Println("error:", err)
 				}
 				w.Write(jsonData)
+
 				total++
 				if total < limit {
 					w.Write([]byte(",\n"))
 				}
 				if total%1000 == 0 {
-					fmt.Printf("%d\n", total)
+					sp.Suffix = ": " + strconv.Itoa(total) + " samples"
+					//fmt.Printf("%d\n", total)
 				}
+
 			}
 		}
 	}
+	sp.Stop()
 	w.Write([]byte("]"))
 	w.Close()
 	err = ioutil.WriteFile(outputFile, b.Bytes(), 0666)
