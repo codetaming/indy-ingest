@@ -5,6 +5,7 @@ import (
 	"compress/gzip"
 	"encoding/json"
 	"encoding/xml"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -29,11 +30,24 @@ type JsonSample struct {
 }
 
 func main() {
-	streamingParse()
+	flag.Usage = func() {
+		fmt.Printf("Usage of %s:\n", os.Args[0])
+		fmt.Printf("    pipeline inputFile outputFile ...\n")
+		flag.PrintDefaults()
+	}
+	if len(os.Args) < 3 {
+		fmt.Println("inputFile and outputFile are required")
+		os.Exit(1)
+	}
+	inputFile := os.Args[1]
+	outputFile := os.Args[2]
+	limitPtr := flag.Int("word", 0, "limit on number of samples to process")
+	flag.Parse()
+	parse(inputFile, outputFile, *limitPtr)
 }
 
-func streamingParse() {
-	xmlFile, err := os.Open("data/ena-samples.xml.gz")
+func parse(inputFile string, outputFile string, limit int) {
+	xmlFile, err := os.Open(inputFile)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -52,11 +66,10 @@ func streamingParse() {
 	var inElement string
 	var b bytes.Buffer
 	w := gzip.NewWriter(&b)
-	limit := 1000
 	w.Write([]byte("["))
 	for {
 		t, _ := decoder.Token()
-		if t == nil || total >= limit {
+		if t == nil || (limit > 0 && total >= limit) {
 			break
 		}
 		switch se := t.(type) {
@@ -83,11 +96,11 @@ func streamingParse() {
 	}
 	w.Write([]byte("]"))
 	w.Close()
-	err = ioutil.WriteFile("data/samples.json.gz", b.Bytes(), 0666)
+	err = ioutil.WriteFile(outputFile, b.Bytes(), 0666)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("\n%d samples", total)
+	fmt.Printf("\nExported %d samples to %s", total, outputFile)
 }
 
 func convertToJson(xs XmlSample) JsonSample {
