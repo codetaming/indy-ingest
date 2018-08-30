@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 git pull
-curl -L -s https://github.com/golang/dep/releases/download/v0.4.1/dep-linux-amd64 -o $GOPATH/bin/dep
+curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
 chmod +x $GOPATH/bin/dep
 cd serverless
 npm install
