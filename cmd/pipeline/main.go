@@ -1,13 +1,12 @@
 package main
 
 import (
-	"bytes"
 	"compress/gzip"
 	"encoding/json"
 	"encoding/xml"
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"github.com/codetaming/indy-ingest/internal/load"
 	"log"
 	"os"
 )
@@ -32,41 +31,27 @@ type JsonSample struct {
 func main() {
 	flag.Usage = func() {
 		fmt.Printf("Usage of %s:\n", os.Args[0])
-		fmt.Printf("    pipeline inputFile outputFile ...\n")
+		fmt.Printf("    pipeline inputFile ...\n")
 		flag.PrintDefaults()
 	}
-	if len(os.Args) < 3 {
-		fmt.Println("inputFile and outputFile are required")
+	limitPtr := flag.Int("limit", 0, "limit on number of samples to process")
+	outputFilePtr := flag.String("outputFile", "samples.json.gz", "output file name")
+	flag.Parse()
+	if len(flag.Args()) != 1 {
+		fmt.Println("inputFile is required")
 		os.Exit(1)
 	}
-	inputFile := os.Args[1]
-	outputFile := os.Args[2]
-	limitPtr := flag.Int("word", 0, "limit on number of samples to process")
-	flag.Parse()
-	parse(inputFile, outputFile, *limitPtr)
+	inputFile := flag.Args()[0]
+	parse(inputFile, load.NewFileLoader(*outputFilePtr), *limitPtr)
 }
 
-func parse(inputFile string, outputFile string, limit int) {
-	xmlFile, err := os.Open(inputFile)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	gz, err := gzip.NewReader(xmlFile)
-
+func parse(inputFile string, loader load.Loader, limit int) {
+	err, decoder := readXml(inputFile)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	defer xmlFile.Close()
-	defer gz.Close()
-
-	decoder := xml.NewDecoder(gz)
 	total := 0
-	var inElement string
-	var b bytes.Buffer
-	w := gzip.NewWriter(&b)
-	w.Write([]byte("["))
+	loader.Start()
 	for {
 		t, _ := decoder.Token()
 		if t == nil || (limit > 0 && total >= limit) {
@@ -74,7 +59,7 @@ func parse(inputFile string, outputFile string, limit int) {
 		}
 		switch se := t.(type) {
 		case xml.StartElement:
-			inElement = se.Name.Local
+			inElement := se.Name.Local
 			if inElement == "SAMPLE" {
 				var s XmlSample
 				decoder.DecodeElement(&s, &se)
@@ -83,24 +68,30 @@ func parse(inputFile string, outputFile string, limit int) {
 				if err != nil {
 					fmt.Println("error:", err)
 				}
-				w.Write(jsonData)
-				total++
-				if total < limit {
-					w.Write([]byte(",\n"))
-				}
+				loader.Store(jsonData, &total, limit)
 				if total%1000 == 0 {
 					fmt.Printf("%d\n", total)
 				}
 			}
 		}
 	}
-	w.Write([]byte("]"))
-	w.Close()
-	err = ioutil.WriteFile(outputFile, b.Bytes(), 0666)
+	loader.Finish()
+	fmt.Printf("\nExported %d samples", total)
+}
+
+func readXml(inputFile string) (error, *xml.Decoder) {
+	xmlFile, err := os.Open(inputFile)
+	if err != nil {
+		fmt.Println(err)
+	}
+	gz, err := gzip.NewReader(xmlFile)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("\nExported %d samples to %s", total, outputFile)
+	defer xmlFile.Close()
+	defer gz.Close()
+	decoder := xml.NewDecoder(gz)
+	return err, decoder
 }
 
 func convertToJson(xs XmlSample) JsonSample {
