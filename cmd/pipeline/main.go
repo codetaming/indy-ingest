@@ -46,14 +46,27 @@ func main() {
 }
 
 func parse(inputFile string, loader load.Loader, limit int) {
-	err, decoder := readXml(inputFile)
+	xmlFile, err := os.Open(inputFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+	gz, err := gzip.NewReader(xmlFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer xmlFile.Close()
+	defer gz.Close()
+	decoder := xml.NewDecoder(gz)
 	if err != nil {
 		log.Fatal(err)
 	}
 	total := 0
 	loader.Start()
 	for {
-		t, _ := decoder.Token()
+		t, err := decoder.Token()
+		if err != nil {
+			log.Fatal(err)
+		}
 		if t == nil || (limit > 0 && total >= limit) {
 			break
 		}
@@ -66,7 +79,7 @@ func parse(inputFile string, loader load.Loader, limit int) {
 				js := convertToJson(s)
 				jsonData, err := json.Marshal(js)
 				if err != nil {
-					fmt.Println("error:", err)
+					log.Fatal("error:", err)
 				}
 				loader.Store(jsonData, &total, limit)
 				if total%1000 == 0 {
@@ -77,21 +90,6 @@ func parse(inputFile string, loader load.Loader, limit int) {
 	}
 	loader.Finish()
 	fmt.Printf("\nExported %d samples", total)
-}
-
-func readXml(inputFile string) (error, *xml.Decoder) {
-	xmlFile, err := os.Open(inputFile)
-	if err != nil {
-		fmt.Println(err)
-	}
-	gz, err := gzip.NewReader(xmlFile)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer xmlFile.Close()
-	defer gz.Close()
-	decoder := xml.NewDecoder(gz)
-	return err, decoder
 }
 
 func convertToJson(xs XmlSample) JsonSample {
