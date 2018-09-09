@@ -1,17 +1,15 @@
-package handlers
+package api
 
 import (
 	"encoding/json"
-	"github.com/codetaming/indy-ingest/internal/persistence"
 	"github.com/gorilla/mux"
 	"net/http"
 )
 
-func GetDataset(w http.ResponseWriter, r *http.Request) {
-	p := new(persistence.DynamoPersistence)
+func (api *API) GetDataset(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	datasetId := vars["datasetId"]
-	dataset, err := p.GetDataset(datasetId)
+	dataset, err := api.dataStore.GetDataset(datasetId)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

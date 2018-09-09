@@ -11,7 +11,7 @@ import (
 
 //AWS Lambda entry point
 func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	return Do(request, new(persistence.DynamoPersistence))
+	return Do(request, new(persistence.DynamoDataStore))
 }
 
 //Do executes the function allowing dependencies to be specified

@@ -1,4 +1,4 @@
-package handlers
+package api
 
 import (
 	"encoding/json"
@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func Dummy(w http.ResponseWriter, r *http.Request) {
+func (api *API) Dummy(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	result := vars
 	w.Header().Set("content-type", "application/json")

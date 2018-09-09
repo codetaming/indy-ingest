@@ -5,18 +5,17 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/codetaming/indy-ingest/internal/model"
 	"github.com/codetaming/indy-ingest/internal/persistence"
-	"github.com/codetaming/indy-ingest/internal/storage"
 	"github.com/codetaming/indy-ingest/internal/utils"
 	"time"
 )
 
 //AWS Lambda entry point
 func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	return Do(request, new(persistence.DynamoPersistence), new(storage.S3Storage))
+	return Do(request, new(persistence.DynamoDataStore), new(persistence.S3FileStore))
 }
 
 //Do executes the function allowing dependencies to be specified
-func Do(request events.APIGatewayProxyRequest, p persistence.MetadataGetter, s storage.MetadataRetriever) (events.APIGatewayProxyResponse, error) {
+func Do(request events.APIGatewayProxyRequest, p persistence.MetadataGetter, s persistence.MetadataRetriever) (events.APIGatewayProxyResponse, error) {
 	datasetId := request.PathParameters["datasetId"]
 	metadataId := request.PathParameters["metadataId"]
 	metadataRecord, err := p.GetMetadata(datasetId, metadataId)

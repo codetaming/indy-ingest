@@ -1,23 +1,21 @@
-package handlers
+package api
 
 import (
 	"encoding/json"
 	"github.com/codetaming/indy-ingest/internal/model"
-	"github.com/codetaming/indy-ingest/internal/persistence"
 	"github.com/google/uuid"
 	"net/http"
 	"os"
 	"time"
 )
 
-func CreateDataset(w http.ResponseWriter, _ *http.Request) {
-	p := new(persistence.DynamoPersistence)
+func (api *API) CreateDataset(w http.ResponseWriter, _ *http.Request) {
 	d := model.Dataset{
 		Owner:     model.DefaultOwner,
 		DatasetId: uuid.Must(uuid.NewUUID()).String(),
 		Created:   time.Now(),
 	}
-	err := p.PersistDataset(d)
+	err := api.dataStore.PersistDataset(d)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

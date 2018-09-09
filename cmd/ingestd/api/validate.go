@@ -1,4 +1,4 @@
-package handlers
+package api
 
 import (
 	"encoding/json"
@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-func Validate(w http.ResponseWriter, r *http.Request) {
+func (api *API) Validate(w http.ResponseWriter, r *http.Request) {
 	schemaUrl, err := utils.ExtractSchemaUrlArray(r.Header)
 	if err != nil {
 		http.Error(w, err.Error(), 500)

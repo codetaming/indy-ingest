@@ -4,6 +4,35 @@ import (
 	"github.com/codetaming/indy-ingest/internal/model"
 )
 
+type DataStore interface {
+	DatasetPersister
+	MetadataPersister
+	DatasetExistenceChecker
+	DatasetLister
+	DatasetGetter
+	MetadataLister
+	MetadataGetter
+}
+
+type FileStore interface {
+	MetadataStorer
+	MetadataRetriever
+}
+
+type MetadataStorer interface {
+	StoreMetadata(key string, bodyJson string) (string, error)
+}
+
+type MetadataRetriever interface {
+	RetrieveMetadata(key string) (string, error)
+}
+
+type NotFoundError struct {
+	msg string
+}
+
+func (e *NotFoundError) Error() string { return e.msg }
+
 type DatasetPersister interface {
 	PersistDataset(dataset model.Dataset) (err error)
 }

@@ -7,7 +7,6 @@ import (
 	"github.com/codetaming/indy-ingest/internal/model"
 	"github.com/codetaming/indy-ingest/internal/persistence"
 	"github.com/codetaming/indy-ingest/internal/publication"
-	"github.com/codetaming/indy-ingest/internal/storage"
 	"github.com/codetaming/indy-ingest/internal/utils"
 	"github.com/codetaming/indy-ingest/internal/validator"
 	"github.com/google/uuid"
@@ -17,14 +16,14 @@ import (
 
 //AWS Lambda entry point
 func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	p := new(persistence.DynamoPersistence)
-	s := new(storage.S3Storage)
+	p := new(persistence.DynamoDataStore)
+	s := new(persistence.S3FileStore)
 	pub := new(publication.SnsPublication)
 	return Do(request, p, p, s, pub)
 }
 
 //Do executes the function allowing dependencies to be specified
-func Do(request events.APIGatewayProxyRequest, dec persistence.DatasetExistenceChecker, mp persistence.MetadataPersister, ms storage.MetadataStorer, mcp publication.MetadataCreatedPublisher) (events.APIGatewayProxyResponse, error) {
+func Do(request events.APIGatewayProxyRequest, dec persistence.DatasetExistenceChecker, mp persistence.MetadataPersister, ms persistence.MetadataStorer, mcp publication.MetadataCreatedPublisher) (events.APIGatewayProxyResponse, error) {
 	datasetId := request.PathParameters["datasetId"]
 	_, err := checkDatasetExists(datasetId, dec)
 
@@ -84,7 +83,7 @@ func checkDatasetExists(datasetId string, p persistence.DatasetExistenceChecker)
 	return p.CheckDatasetIdExists(datasetId)
 }
 
-func createMetadataFile(datasetId string, metadataId string, bodyJson string, ms storage.MetadataStorer) (fileLocation string, err error) {
+func createMetadataFile(datasetId string, metadataId string, bodyJson string, ms persistence.MetadataStorer) (fileLocation string, err error) {
 	key := datasetId + "/" + metadataId
 	return ms.StoreMetadata(key, bodyJson)
 }

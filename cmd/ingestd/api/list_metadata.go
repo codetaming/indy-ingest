@@ -1,17 +1,15 @@
-package handlers
+package api
 
 import (
 	"encoding/json"
-	"github.com/codetaming/indy-ingest/internal/persistence"
 	"github.com/gorilla/mux"
 	"net/http"
 )
 
-func ListMetadata(w http.ResponseWriter, r *http.Request) {
-	p := new(persistence.DynamoPersistence)
+func (api *API) ListMetadata(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	datasetId := vars["datasetId"]
-	metadata, err := p.ListMetadata(datasetId)
+	metadata, err := api.dataStore.ListMetadata(datasetId)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

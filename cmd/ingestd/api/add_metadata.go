@@ -1,10 +1,9 @@
-package handlers
+package api
 
 import (
 	"encoding/json"
 	"github.com/codetaming/indy-ingest/internal/model"
 	"github.com/codetaming/indy-ingest/internal/persistence"
-	"github.com/codetaming/indy-ingest/internal/storage"
 	"github.com/codetaming/indy-ingest/internal/utils"
 	"github.com/codetaming/indy-ingest/internal/validator"
 	"github.com/google/uuid"
@@ -15,12 +14,10 @@ import (
 	"time"
 )
 
-func AddMetadata(w http.ResponseWriter, r *http.Request) {
-	p := new(persistence.DynamoPersistence)
-	s := new(storage.S3Storage)
+func (api *API) AddMetadata(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	datasetId := vars["datasetId"]
-	_, err := checkDatasetExists(datasetId, p)
+	_, err := checkDatasetExists(datasetId, api.dataStore)
 
 	schemaUrl, err := utils.ExtractSchemaUrlArray(r.Header)
 	if err != nil {
@@ -39,13 +36,13 @@ func AddMetadata(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 
 	if result.Valid {
-		metadataRecord, metadataId, err := createMetadataRecord(datasetId, schemaUrl, p)
+		metadataRecord, metadataId, err := createMetadataRecord(datasetId, schemaUrl, api.dataStore)
 		if err != nil {
 			http.Error(w, err.Error(), 500)
 			return
 		}
 
-		fileLocation, err := createMetadataFile(datasetId, metadataId, string(b[:]), s)
+		fileLocation, err := createMetadataFile(datasetId, metadataId, string(b[:]), api.fileStore)
 		if err != nil {
 			http.Error(w, err.Error(), 500)
 			return
@@ -72,7 +69,7 @@ func checkDatasetExists(datasetId string, p persistence.DatasetExistenceChecker)
 	return p.CheckDatasetIdExists(datasetId)
 }
 
-func createMetadataFile(datasetId string, metadataId string, bodyJson string, ms storage.MetadataStorer) (fileLocation string, err error) {
+func createMetadataFile(datasetId string, metadataId string, bodyJson string, ms persistence.MetadataStorer) (fileLocation string, err error) {
 	key := datasetId + "/" + metadataId
 	return ms.StoreMetadata(key, bodyJson)
 }

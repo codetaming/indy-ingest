@@ -8,74 +8,65 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/codetaming/indy-ingest/internal/model"
 	"log"
-	"os"
 )
 
-type DynamoPersistence struct{}
-
-type NotFoundError struct {
-	msg string
+type DynamoDataStore struct {
+	logger        *log.Logger
+	ddb           *dynamodb.DynamoDB
+	datasetTable  *string
+	metadataTable *string
 }
 
-func (e *NotFoundError) Error() string { return e.msg }
-
-var ddb *dynamodb.DynamoDB
-
-const datasetTableEnv = "DATASET_TABLE"
-const metadataTableEnv = "METADATA_TABLE"
-
-func init() {
-	region := os.Getenv("AWS_REGION")
+func NewDynamoPersistence(logger *log.Logger, region string, datasetTable string, metadataTable string) (DataStore, error) {
 	if ses, err := session.NewSession(&aws.Config{
 		Region: &region,
 	}); err != nil {
-		log.Println(fmt.Sprintf("Failed to connect to AWS: %s", err.Error()))
+		logger.Println(fmt.Sprintf("Failed to connect to AWS: %s", err.Error()))
+		return nil, err
 	} else {
-		ddb = dynamodb.New(ses)
+		return DynamoDataStore{
+			logger:        logger,
+			ddb:           dynamodb.New(ses),
+			datasetTable:  &datasetTable,
+			metadataTable: &metadataTable,
+		}, nil
 	}
 }
 
-func (DynamoPersistence) PersistDataset(dataset model.Dataset) (err error) {
+func (d DynamoDataStore) PersistDataset(dataset model.Dataset) (err error) {
 	av, err := dynamodbattribute.MarshalMap(dataset)
 	if err != nil {
-		log.Panic(fmt.Sprintf("failed to DynamoDB marshal Record, %v", err))
+		d.logger.Panic(fmt.Sprintf("failed to DynamoDB marshal Record, %v", err))
 	}
-
-	tableName := aws.String(os.Getenv(datasetTableEnv))
-
 	input := &dynamodb.PutItemInput{
 		Item:      av,
-		TableName: tableName,
+		TableName: d.datasetTable,
 	}
-	if _, err := ddb.PutItem(input); err != nil {
+	if _, err := d.ddb.PutItem(input); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (DynamoPersistence) PersistMetadata(metadata model.Metadata) (err error) {
+func (d DynamoDataStore) PersistMetadata(metadata model.Metadata) (err error) {
 	av, err := dynamodbattribute.MarshalMap(metadata)
 	if err != nil {
-		log.Panic(fmt.Sprintf("failed to DynamoDB marshal Record, %v", err))
+		d.logger.Panic(fmt.Sprintf("failed to DynamoDB marshal Record, %v", err))
 		return err
 	}
-
-	tableName := aws.String(os.Getenv(metadataTableEnv))
-
 	input := &dynamodb.PutItemInput{
 		Item:      av,
-		TableName: tableName,
+		TableName: d.metadataTable,
 	}
-	if _, err := ddb.PutItem(input); err != nil {
+	if _, err := d.ddb.PutItem(input); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (DynamoPersistence) CheckDatasetIdExists(datasetId string) (bool, error) {
-	var tableName = aws.String(os.Getenv(datasetTableEnv))
-	result, err := ddb.GetItem(&dynamodb.GetItemInput{
-		TableName: tableName,
+func (d DynamoDataStore) CheckDatasetIdExists(datasetId string) (bool, error) {
+	result, err := d.ddb.GetItem(&dynamodb.GetItemInput{
+		TableName: d.datasetTable,
 		Key: map[string]*dynamodb.AttributeValue{
 			"owner": {
 				S: aws.String(model.DefaultOwner),
@@ -99,10 +90,9 @@ func (DynamoPersistence) CheckDatasetIdExists(datasetId string) (bool, error) {
 	return true, nil
 }
 
-func (DynamoPersistence) ListDatasets() ([]model.Dataset, error) {
-	var tableName = aws.String(os.Getenv(datasetTableEnv))
+func (d DynamoDataStore) ListDatasets() ([]model.Dataset, error) {
 	var queryInput = &dynamodb.QueryInput{
-		TableName: tableName,
+		TableName: d.datasetTable,
 		KeyConditions: map[string]*dynamodb.Condition{
 			"owner": {
 				ComparisonOperator: aws.String("EQ"),
@@ -114,7 +104,7 @@ func (DynamoPersistence) ListDatasets() ([]model.Dataset, error) {
 			},
 		},
 	}
-	result, err := ddb.Query(queryInput)
+	result, err := d.ddb.Query(queryInput)
 	if err != nil {
 		return nil, err
 	} else {
@@ -124,11 +114,10 @@ func (DynamoPersistence) ListDatasets() ([]model.Dataset, error) {
 	}
 }
 
-func (DynamoPersistence) GetDataset(datasetId string) (model.Dataset, error) {
-	var tableName = aws.String(os.Getenv(datasetTableEnv))
+func (d DynamoDataStore) GetDataset(datasetId string) (model.Dataset, error) {
 	var dataset model.Dataset
-	result, err := ddb.GetItem(&dynamodb.GetItemInput{
-		TableName: tableName,
+	result, err := d.ddb.GetItem(&dynamodb.GetItemInput{
+		TableName: d.datasetTable,
 		Key: map[string]*dynamodb.AttributeValue{
 			"owner": {
 				S: aws.String(model.DefaultOwner),
@@ -146,16 +135,15 @@ func (DynamoPersistence) GetDataset(datasetId string) (model.Dataset, error) {
 	}
 	err = dynamodbattribute.UnmarshalMap(result.Item, &dataset)
 	if err != nil {
-		log.Println("Error unmarshalling:" + err.Error())
+		d.logger.Println("Error unmarshalling:" + err.Error())
 		return dataset, err
 	}
 	return dataset, nil
 }
 
-func (DynamoPersistence) ListMetadata(datasetId string) ([]model.Metadata, error) {
-	var tableName = aws.String(os.Getenv(metadataTableEnv))
+func (d DynamoDataStore) ListMetadata(datasetId string) ([]model.Metadata, error) {
 	var queryInput = &dynamodb.QueryInput{
-		TableName: tableName,
+		TableName: d.metadataTable,
 		KeyConditions: map[string]*dynamodb.Condition{
 			"dataset_id": {
 				ComparisonOperator: aws.String("EQ"),
@@ -167,7 +155,7 @@ func (DynamoPersistence) ListMetadata(datasetId string) ([]model.Metadata, error
 			},
 		},
 	}
-	result, err := ddb.Query(queryInput)
+	result, err := d.ddb.Query(queryInput)
 	if err != nil {
 		return nil, err
 	} else {
@@ -177,11 +165,10 @@ func (DynamoPersistence) ListMetadata(datasetId string) ([]model.Metadata, error
 	}
 }
 
-func (DynamoPersistence) GetMetadata(datasetId string, metadataId string) (model.Metadata, error) {
-	var tableName = aws.String(os.Getenv(metadataTableEnv))
+func (d DynamoDataStore) GetMetadata(datasetId string, metadataId string) (model.Metadata, error) {
 	var metadata model.Metadata
-	result, err := ddb.GetItem(&dynamodb.GetItemInput{
-		TableName: tableName,
+	result, err := d.ddb.GetItem(&dynamodb.GetItemInput{
+		TableName: d.metadataTable,
 		Key: map[string]*dynamodb.AttributeValue{
 			"dataset_id": {
 				S: aws.String(datasetId),
@@ -191,8 +178,7 @@ func (DynamoPersistence) GetMetadata(datasetId string, metadataId string) (model
 			},
 		},
 	})
-	log.Print("table: " + os.Getenv(metadataTableEnv))
-	log.Print("dataset_id: " + datasetId + ", metadata_id: " + metadataId)
+	d.logger.Print("dataset_id: " + datasetId + ", metadata_id: " + metadataId)
 
 	if err != nil {
 		return metadata, err
@@ -202,7 +188,7 @@ func (DynamoPersistence) GetMetadata(datasetId string, metadataId string) (model
 	}
 	err = dynamodbattribute.UnmarshalMap(result.Item, &metadata)
 	if err != nil {
-		log.Println("Error unmarshalling:" + err.Error())
+		d.logger.Println("Error unmarshalling:" + err.Error())
 		return metadata, err
 	}
 	return metadata, nil
