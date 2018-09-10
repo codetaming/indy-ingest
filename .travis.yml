@@ -21,6 +21,7 @@ before_script:
 
 script:
   #- diff -u <(echo -n) <(gofmt -d $($LINT_PKGS))                  # Fail if a .go file hasn't been formatted with gofmt
+  - go build
   - ./scripts/test.sh                                              # Run all tests with coverage
   - go vet -v ./...                                                # static analyisis
   - golint $LINT_PKGS                                              # lint - ignore failures for now
