@@ -1,7 +1,7 @@
-package main
+package indy_ingest
 
 import (
-	"github.com/codetaming/indy-ingest/cmd/ingestd/api"
+	"github.com/codetaming/indy-ingest/cmd/api"
 	"github.com/codetaming/indy-ingest/internal/persistence"
 	"github.com/gorilla/mux"
 	"log"
