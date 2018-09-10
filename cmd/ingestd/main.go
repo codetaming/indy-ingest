@@ -9,15 +9,36 @@ import (
 	"os"
 )
 
+var (
+	serverPort     = os.Getenv("SERVER_PORT")
+	region         = os.Getenv("AWS_REGION")
+	datasetTable   = os.Getenv("DATASET_TABLE")
+	metadataTable  = os.Getenv("METADATA_TABLE")
+	metadataBucket = os.Getenv("METADATA_BUCKET")
+)
+
+func init() {
+	if serverPort == "" {
+		log.Fatal("$SERVER_PORT not set")
+	}
+	if region == "" {
+		log.Fatal("$AWS_REGION not set")
+	}
+	if datasetTable == "" {
+		log.Fatal("$DATASET_TABLE not set")
+	}
+	if metadataTable == "" {
+		log.Fatal("$METADATA_TABLE not set")
+	}
+	if metadataBucket == "" {
+		log.Fatal("$METADATA_BUCKET not set")
+	}
+}
+
 func main() {
 	router := mux.NewRouter()
 
 	logger := log.New(os.Stdout, "ingest ", log.LstdFlags|log.Lshortfile)
-
-	region := os.Getenv("AWS_REGION")
-	datasetTable := os.Getenv("DATASET_TABLE")
-	metadataTable := os.Getenv("METADATA_TABLE")
-	metadataBucket := os.Getenv("METADATA_BUCKET")
 
 	dataStore, err := persistence.NewDynamoPersistence(logger, region, datasetTable, metadataTable)
 	if err != nil {
@@ -32,8 +53,8 @@ func main() {
 	a := api.NewAPI(logger, dataStore, fileStore)
 	a.SetupRoutes(router)
 
-	logger.Println("server starting")
-	err = http.ListenAndServe(":9000", router)
+	logger.Printf("server starting on port %s", serverPort)
+	err = http.ListenAndServe(":"+serverPort, router)
 	if err != nil {
 		logger.Fatalf("server failed to start: %v", err)
 	}
