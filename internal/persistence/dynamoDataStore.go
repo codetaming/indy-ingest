@@ -17,7 +17,7 @@ type DynamoDataStore struct {
 	metadataTable *string
 }
 
-func NewDynamoPersistence(logger *log.Logger, region string, datasetTable string, metadataTable string) (DataStore, error) {
+func NewDynamoDataStore(logger *log.Logger, region string, datasetTable string, metadataTable string) (DataStore, error) {
 	if ses, err := session.NewSession(&aws.Config{
 		Region: &region,
 	}); err != nil {
