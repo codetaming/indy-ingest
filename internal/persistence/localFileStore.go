@@ -11,17 +11,17 @@ type LocalFileStore struct {
 	fileStoreRoot string
 }
 
-func (l *LocalFileStore) StoreMetadata(key string, content string) (location string, error error) {
+func (l *LocalFileStore) StoreMetadata(key string, content string) (location string, err error) {
 	d1 := []byte(content)
 	filename := fmt.Sprintf("%s/%s", l.fileStoreRoot, key)
-	err := ioutil.WriteFile(filename, d1, 0644)
+	err = ioutil.WriteFile(filename, d1, 0644)
 	if err != nil {
 		l.logger.Printf("Error writing file: %s", filename)
 	}
 	return filename, err
 }
 
-func (l *LocalFileStore) RetrieveMetadata(key string) (content string, error error) {
+func (l *LocalFileStore) RetrieveMetadata(key string) (content string, err error) {
 	filename := fmt.Sprintf("%s/%s", l.fileStoreRoot, key)
 	dat, err := ioutil.ReadFile(filename)
 	if err != nil {
