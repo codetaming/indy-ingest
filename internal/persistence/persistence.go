@@ -20,7 +20,7 @@ type FileStore interface {
 }
 
 type MetadataStorer interface {
-	StoreMetadata(key string, bodyJson string) (string, error)
+	StoreMetadata(key string, content string) (location string, error error)
 }
 
 type MetadataRetriever interface {

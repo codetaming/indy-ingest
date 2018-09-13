@@ -34,7 +34,7 @@ func TestHandlers_Handler(t *testing.T) {
 				logger.Fatalf("failed to create data store: %v", err)
 			}
 
-			fileStore, err := persistence.NewLocalFileStore(logger)
+			fileStore, err := persistence.NewLocalFileStore(logger, "/tmp")
 			if err != nil {
 				logger.Fatalf("failed to create file store: %v", err)
 			}
