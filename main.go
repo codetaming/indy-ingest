@@ -40,12 +40,12 @@ func main() {
 
 	logger := log.New(os.Stdout, "ingest ", log.LstdFlags|log.Lshortfile)
 
-	dataStore, err := persistence.NewDynamoDataStore(logger, region, datasetTable, metadataTable)
+	dataStore, err := persistence.NewInMemoryDataStore(logger)
 	if err != nil {
 		logger.Fatalf("failed to create data store: %v", err)
 	}
 
-	fileStore, err := persistence.NewS3FileStore(logger, region, metadataBucket)
+	fileStore, err := persistence.NewLocalFileStore(logger, "/tmp")
 	if err != nil {
 		logger.Fatalf("failed to create file store: %v", err)
 	}

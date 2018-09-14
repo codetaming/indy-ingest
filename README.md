@@ -5,6 +5,7 @@
 [![Build Status][5]][6]
 [![codecov][7]][8]
 [![Codacy Badge][9]][10]
+[![Docker Repository on Quay][11]][12]
 
 [1]: https://godoc.org/github.com/codetaming/indy-ingest?status.svg
 [2]: https://godoc.org/github.com/codetaming/indy-ingest
@@ -16,7 +17,8 @@
 [8]: https://codecov.io/gh/codetaming/indy-ingest
 [9]: https://api.codacy.com/project/badge/Grade/b75a9233c6064ba4a61c70e44fbaae26
 [10]: https://www.codacy.com/app/danielvaughan/indy-ingest?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=codetaming/indy-ingest&amp;utm_campaign=Badge_Grade
-
+[11]: https://quay.io/repository/codetaming/indy-ingest/status "Docker Repository on Quay"
+[12]: https://quay.io/repository/codetaming/indy-ingest
 *Personal learning project for GoLang and AWS*
 
 Creates and API for submission and validation of JSON via API Gateway and Lambda with storage in data S3 and state storage in DynamoDB.
