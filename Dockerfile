@@ -6,10 +6,8 @@ RUN go build -o ingestd .
 
 FROM alpine:3.8
 RUN apk update && apk add ca-certificates && rm -rf /var/cache/apk/*
-RUN mkdir /app
-WORKDIR /app
-COPY --from=BUILD /app/ingestd /app/ingestd
-WORKDIR /app
+COPY --from=BUILD /app/ingestd /
+RUN ls -l
 
 EXPOSE 9000
-ENTRYPOINT ./app/ingestd
+ENTRYPOINT ./ingestd
