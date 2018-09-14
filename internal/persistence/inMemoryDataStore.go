@@ -8,7 +8,7 @@ import (
 type InMemoryDataStore struct {
 	logger    *log.Logger
 	datasets  map[string]model.Dataset
-	metadatas map[string]model.Metadata
+	metadatas map[string]map[string]model.Metadata
 }
 
 func (ds *InMemoryDataStore) PersistDataset(dataset model.Dataset) (err error) {
@@ -17,7 +17,10 @@ func (ds *InMemoryDataStore) PersistDataset(dataset model.Dataset) (err error) {
 }
 
 func (ds *InMemoryDataStore) PersistMetadata(metadata model.Metadata) (err error) {
-	ds.metadatas[metadata.MetadataId] = metadata
+	if ds.metadatas[metadata.DatasetId] == nil {
+		ds.metadatas[metadata.DatasetId] = make(map[string]model.Metadata)
+	}
+	ds.metadatas[metadata.DatasetId][metadata.MetadataId] = metadata
 	return nil
 }
 
@@ -40,20 +43,20 @@ func (ds *InMemoryDataStore) GetDataset(datasetId string) (model.Dataset, error)
 
 func (ds *InMemoryDataStore) ListMetadata(datasetId string) ([]model.Metadata, error) {
 	var arr []model.Metadata
-	for _, v := range ds.metadatas {
+	for _, v := range ds.metadatas[datasetId] {
 		arr = append(arr, v)
 	}
 	return arr, nil
 }
 
 func (ds *InMemoryDataStore) GetMetadata(datasetId string, metadataId string) (model.Metadata, error) {
-	return ds.metadatas[metadataId], nil
+	return ds.metadatas[datasetId][metadataId], nil
 }
 
 func NewInMemoryDataStore(logger *log.Logger) (DataStore, error) {
 	return &InMemoryDataStore{
 		logger:    logger,
 		datasets:  make(map[string]model.Dataset),
-		metadatas: make(map[string]model.Metadata),
+		metadatas: make(map[string]map[string]model.Metadata),
 	}, nil
 }
