@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/codetaming/indy-ingest/internal/persistence"
+	"github.com/stretchr/testify/assert"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -9,48 +10,48 @@ import (
 	"testing"
 )
 
-func TestHandlers_Handler(t *testing.T) {
+var a *API
+
+func TestHandlers_CreateDataset(t *testing.T) {
 	tests := []struct {
-		name           string
-		in             *http.Request
-		out            *httptest.ResponseRecorder
-		expectedStatus int
-		expectedBody   string
+		name                   string
+		in                     *http.Request
+		out                    *httptest.ResponseRecorder
+		expectedLocationHeader string
+		expectedStatus         int
+		expectedBody           string
 	}{
 		{
-			in:             httptest.NewRequest("GET", "/", nil),
-			out:            httptest.NewRecorder(),
-			expectedStatus: http.StatusCreated,
-			expectedBody:   "",
+			name:                   "Create Dataset",
+			in:                     httptest.NewRequest("POST", "/dataset", nil),
+			out:                    httptest.NewRecorder(),
+			expectedLocationHeader: "/dataset/.+",
+			expectedStatus:         http.StatusCreated,
+			expectedBody:           "{\"owner\":\".+\",\"dataset_id\":\".+\",\"created\":\".+\"}",
 		},
 	}
 
 	for _, test := range tests {
 		test := test
 		t.Run(test.name, func(t *testing.T) {
-			logger := log.New(os.Stdout, "ingest-test ", log.LstdFlags|log.Lshortfile)
-			dataStore, err := persistence.NewInMemoryDataStore(logger)
-			if err != nil {
-				logger.Fatalf("failed to create data store: %v", err)
-			}
-
-			fileStore, err := persistence.NewLocalFileStore(logger, "/tmp")
-			if err != nil {
-				logger.Fatalf("failed to create file store: %v", err)
-			}
-			a := NewAPI(logger, dataStore, fileStore)
 			a.CreateDataset(test.out, test.in)
-			if test.out.Code != test.expectedStatus {
-				t.Logf("expected: %d\ngot: %d\n", test.expectedStatus, test.out.Code)
-				t.Fail()
-			}
-			/*
-				body := test.out.Body.String()
-				if body != test.expectedBody {
-					t.Logf("expected: %s\ngot: %s\n", test.expectedBody, body)
-					t.Fail()
-				}
-			*/
+			assert.Regexp(t, test.expectedLocationHeader, test.out.Header()["Location"])
+			assert.Equal(t, test.expectedStatus, test.out.Code)
+			assert.Regexp(t, test.expectedBody, test.out.Body)
 		})
 	}
+}
+
+func init() {
+	logger := log.New(os.Stdout, "ingest-test ", log.LstdFlags|log.Lshortfile)
+	dataStore, err := persistence.NewInMemoryDataStore(logger)
+	if err != nil {
+		logger.Fatalf("failed to create data store: %v", err)
+	}
+
+	fileStore, err := persistence.NewLocalFileStore(logger, "/tmp")
+	if err != nil {
+		logger.Fatalf("failed to create file store: %v", err)
+	}
+	a = NewAPI(logger, dataStore, fileStore)
 }
