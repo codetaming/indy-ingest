@@ -19,12 +19,14 @@
 [10]: https://www.codacy.com/app/danielvaughan/indy-ingest?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=codetaming/indy-ingest&amp;utm_campaign=Badge_Grade
 [11]: https://quay.io/repository/codetaming/indy-ingest/status "Docker Repository on Quay"
 [12]: https://quay.io/repository/codetaming/indy-ingest
-*Personal learning project for GoLang and AWS*
+*Personal learning project for Go with Serverless AWS or Kubernetes*
 
-Creates and API for submission and validation of JSON via API Gateway and Lambda with storage in data S3 and state storage in DynamoDB.
+Provides an API for submission and validation of metadata with storage in data S3 and state storage in DynamoDB.
+
+Can be deployed to Kubernetes or Serverless as AWS API Gateway and Lambda 
 
 *Setup and Build*
-Requires [npm](https://docs.npmjs.com/cli/install) for serverless framework and [Go](https://golang.org/dl/) with [dep](https://github.com/golang/dep) for code.
+Requires [npm](https://docs.npmjs.com/cli/install) for serverless framework and [Go](https://golang.org/dl/) 1.11 with module support.
 
 Run `./scripts/setup.sh` to resolve dependencies and build.
 
@@ -35,25 +37,25 @@ make
 ```
 Build Docker image
 ```
-docker build -f Dockerfile-arm -t codetaming/ingest-arm .
-docker build -f Dockerfile -t codetaming/ingest .
+docker build -f Dockerfile-arm -t codetaming/indy-ingest-arm .
+docker build -f Dockerfile -t codetaming/indy-ingest .
 ```
 
 Run (Local)
 ```
-docker run --publish 9000:9000 -t codetaming/ingest
+docker run --publish 9000:9000 -t codetaming/indy-ingest
 ```
 
 Run (Pi)
 ```
-docker run --publish 9000:9000 -t codetaming/ingest-arm
+docker run --publish 9000:9000 -t codetaming/indy-ingest-arm
 ```
 
 Push to Docker Hub
 ```
 docker login
-docker push codetaming/ingest-arm
-docker push codetaming/ingest 
+docker push codetaming/indy-ingest-arm
+docker push codetaming/indy-ingest
 ```
 
 ## Uses
