@@ -1,0 +1,25 @@
+{
+  "organ": {
+    "text": "brain",
+    "ontology": "UBERON:0000955"
+  },
+  "schema_type": "biomaterial",
+  "biomaterial_core": {
+    "ncbi_taxon_id": [
+      9606
+    ],
+    "k": "BT_S2_T",
+    "has_input_biomaterial": "BT_S2",
+    "biomaterial_description": "Tumor"
+  },
+  "organ_part": {
+    "text": "temporal lobe"
+  },
+  "genus_species": [
+    {
+      "text": "Homo sapiens",
+      "ontology": "NCBITaxon:9606"
+    }
+  ],
+  "describedBy": "https://schema.humancellatlas.org/type/biomaterial/5.1.0/specimen_from_organism"
+}

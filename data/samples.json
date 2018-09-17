@@ -1,0 +1,6 @@
+[{"name":"DRS000001","accession":"DRS000001","characteristics":{"ENA-BASE-COUNT":"730668528","ENA-FIRST-PUBLIC":"2010-04-28","ENA-LAST-UPDATE":"2015-08-24","ENA-SPOT-COUNT":"10148174","common name":"Bacillus subtilis subsp. natto","sample comment":"Genomic DNA from Bacillus subtilis subsp. natto BEST195, without pBEST195L       plasid.","sample_name":"DRS000001","strain":"BEST195"}},
+{"name":"DRS000002","accession":"DRS000002","characteristics":{"ENA-BASE-COUNT":"598805064","ENA-FIRST-PUBLIC":"2010-04-28","ENA-LAST-UPDATE":"2015-08-24","ENA-SPOT-COUNT":"8316737","sample comment":"Genomic DNA from Bacillus subtilis subsp. subtilis 168.","sample_name":"DRS000002","strain":"str. 168"}},
+{"name":"DRS000003","accession":"DRS000003","characteristics":{"ENA-BASE-COUNT":"7461074340","ENA-FIRST-PUBLIC":"2010-10-18","ENA-LAST-UPDATE":"2015-08-24","ENA-SPOT-COUNT":"207252065","sample_name":"DRS000003"}},
+{"name":"DRS000004","accession":"DRS000004","characteristics":{"ENA-BASE-COUNT":"1976458608","ENA-FIRST-PUBLIC":"2010-10-18","ENA-LAST-UPDATE":"2015-08-24","ENA-SPOT-COUNT":"54901628","sample_name":"DRS000004"}},
+{"name":"DRS000005","accession":"DRS000005","characteristics":{"ENA-BASE-COUNT":"1668749004","ENA-FIRST-PUBLIC":"2010-10-18","ENA-LAST-UPDATE":"2015-08-24","ENA-SPOT-COUNT":"46354139","sample_name":"DRS000005"}},
+]
