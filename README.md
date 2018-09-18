@@ -31,7 +31,7 @@ Can be deployed to Kubernetes or serverless with AWS API Gateway and AWS Lambda.
 * The system must run performantly on a 3-node Kubernetes cluster of Rasperry Pi 3s
 * The system must be capable of running as a AWS serverless application at minimal cost by keeping to the free tier whenever possible
 
-![Rasperry Pi Cluster](./images/cluster.jpg =250x)
+![Rasperry Pi Cluster](./images/cluster.jpg?raw=true "Rasperry Pi Cluster")
  
 ## Setup and Build
 Requires [npm](https://docs.npmjs.com/cli/install) for serverless framework and [Go](https://golang.org/dl/) 1.11 with module support.
