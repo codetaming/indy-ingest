@@ -1,4 +1,4 @@
-package publication
+package mock
 
 import "log"
 

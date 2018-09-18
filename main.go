@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/codetaming/indy-ingest/cmd/api"
-	"github.com/codetaming/indy-ingest/internal/persistence"
+	"github.com/codetaming/indy-ingest/internal/persistence/aws"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
@@ -40,12 +40,12 @@ func main() {
 
 	logger := log.New(os.Stdout, "ingest ", log.LstdFlags|log.Lshortfile)
 
-	dataStore, err := persistence.NewDynamoDataStore(logger, region, datasetTable, metadataTable)
+	dataStore, err := aws.NewDynamoDataStore(logger, region, datasetTable, metadataTable)
 	if err != nil {
 		logger.Fatalf("failed to create data store: %v", err)
 	}
 
-	fileStore, err := persistence.NewS3FileStore(logger, region, metadataBucket)
+	fileStore, err := aws.NewS3FileStore(logger, region, metadataBucket)
 	if err != nil {
 		logger.Fatalf("failed to create file store: %v", err)
 	}

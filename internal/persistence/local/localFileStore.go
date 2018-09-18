@@ -1,7 +1,8 @@
-package persistence
+package local
 
 import (
 	"fmt"
+	"github.com/codetaming/indy-ingest/internal/persistence"
 	"io/ioutil"
 	"log"
 )
@@ -30,7 +31,7 @@ func (l *LocalFileStore) RetrieveMetadata(key string) (content string, err error
 	return string(dat), err
 }
 
-func NewLocalFileStore(logger *log.Logger, fileStoreRoot string) (FileStore, error) {
+func NewLocalFileStore(logger *log.Logger, fileStoreRoot string) (persistence.FileStore, error) {
 	return &LocalFileStore{
 		logger:        logger,
 		fileStoreRoot: fileStoreRoot,

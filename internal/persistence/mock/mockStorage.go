@@ -1,4 +1,4 @@
-package persistence
+package mock
 
 type MockStorage struct{}
 

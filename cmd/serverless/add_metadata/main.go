@@ -6,7 +6,9 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/codetaming/indy-ingest/internal/model"
 	"github.com/codetaming/indy-ingest/internal/persistence"
+	"github.com/codetaming/indy-ingest/internal/persistence/aws"
 	"github.com/codetaming/indy-ingest/internal/publication"
+	awspub "github.com/codetaming/indy-ingest/internal/publication/aws"
 	"github.com/codetaming/indy-ingest/internal/utils"
 	"github.com/codetaming/indy-ingest/internal/validator"
 	"github.com/google/uuid"
@@ -16,9 +18,9 @@ import (
 
 //AWS Lambda entry point
 func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	p := new(persistence.DynamoDataStore)
-	s := new(persistence.S3FileStore)
-	pub := new(publication.SnsPublication)
+	p := new(aws.DynamoDataStore)
+	s := new(aws.S3FileStore)
+	pub := new(awspub.SnsPublication)
 	return Do(request, p, p, s, pub)
 }
 

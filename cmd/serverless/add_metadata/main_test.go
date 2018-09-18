@@ -1,11 +1,11 @@
 package main
 
 import (
+	"github.com/codetaming/indy-ingest/internal/persistence/mock"
+	mockpub "github.com/codetaming/indy-ingest/internal/publication/mock"
 	"testing"
 
 	"github.com/aws/aws-lambda-go/events"
-	"github.com/codetaming/indy-ingest/internal/persistence"
-	"github.com/codetaming/indy-ingest/internal/publication"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -22,25 +22,6 @@ var headers = map[string]string{
 
 var pathParameters = map[string]string{
 	"datasetId": "12345",
-}
-
-func TestErroredHandler(t *testing.T) {
-	tests := []testDefinition{
-		{
-			request: events.APIGatewayProxyRequest{
-				PathParameters: pathParameters,
-				Headers:        headers,
-				Body:           ``},
-			expectedMessage: "",
-			expectedCode:    500,
-			err:             nil,
-		},
-	}
-	for _, test := range tests {
-		response, err := ErroredHandler(test.request)
-		assert.IsType(t, test.err, err)
-		assert.Equal(t, test.expectedCode, response.StatusCode)
-	}
 }
 
 func TestHandler(t *testing.T) {
@@ -99,16 +80,9 @@ func TestHandler(t *testing.T) {
 	}
 }
 
-func ErroredHandler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	p := new(persistence.ErroredPersistence)
-	s := new(persistence.MockStorage)
-	pub := new(publication.MockPublication)
-	return Do(request, p, p, s, pub)
-}
-
 func MockHandler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	p := new(persistence.MockPersistence)
-	s := new(persistence.MockStorage)
-	pub := new(publication.MockPublication)
+	p := new(mock.MockPersistence)
+	s := new(mock.MockStorage)
+	pub := new(mockpub.MockPublication)
 	return Do(request, p, p, s, pub)
 }

@@ -1,7 +1,7 @@
 package api
 
 import (
-	"github.com/codetaming/indy-ingest/internal/persistence"
+	"github.com/codetaming/indy-ingest/internal/persistence/local"
 	"github.com/stretchr/testify/assert"
 	"log"
 	"net/http"
@@ -95,12 +95,12 @@ func TestHandlers_CreateDataset(t *testing.T) {
 
 func init() {
 	logger = log.New(os.Stdout, "ingest-test ", log.LstdFlags|log.Lshortfile)
-	dataStore, err := persistence.NewInMemoryDataStore(logger)
+	dataStore, err := local.NewInMemoryDataStore(logger)
 	if err != nil {
 		logger.Fatalf("failed to create data store: %v", err)
 	}
 
-	fileStore, err := persistence.NewLocalFileStore(logger, "/tmp")
+	fileStore, err := local.NewLocalFileStore(logger, "/tmp")
 	if err != nil {
 		logger.Fatalf("failed to create file store: %v", err)
 	}

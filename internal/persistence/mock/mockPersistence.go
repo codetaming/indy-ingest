@@ -1,4 +1,4 @@
-package persistence
+package mock
 
 import (
 	"github.com/codetaming/indy-ingest/internal/model"

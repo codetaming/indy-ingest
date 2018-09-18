@@ -28,10 +28,10 @@ type MetadataRetriever interface {
 }
 
 type NotFoundError struct {
-	msg string
+	Message string
 }
 
-func (e *NotFoundError) Error() string { return e.msg }
+func (e *NotFoundError) Error() string { return e.Message }
 
 type DatasetPersister interface {
 	PersistDataset(dataset model.Dataset) (err error)

@@ -1,7 +1,8 @@
-package persistence
+package local
 
 import (
 	"github.com/codetaming/indy-ingest/internal/model"
+	"github.com/codetaming/indy-ingest/internal/persistence"
 	"log"
 )
 
@@ -53,7 +54,7 @@ func (ds *InMemoryDataStore) GetMetadata(datasetId string, metadataId string) (m
 	return ds.metadatas[datasetId][metadataId], nil
 }
 
-func NewInMemoryDataStore(logger *log.Logger) (DataStore, error) {
+func NewInMemoryDataStore(logger *log.Logger) (persistence.DataStore, error) {
 	return &InMemoryDataStore{
 		logger:    logger,
 		datasets:  make(map[string]model.Dataset),

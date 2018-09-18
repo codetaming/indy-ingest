@@ -1,4 +1,4 @@
-package persistence
+package aws
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"github.com/codetaming/indy-ingest/internal/persistence"
 	"io/ioutil"
 	"log"
 	"strings"
@@ -18,7 +19,7 @@ type S3FileStore struct {
 	metadataBucket string
 }
 
-func NewS3FileStore(logger *log.Logger, region string, metadataBucket string) (FileStore, error) {
+func NewS3FileStore(logger *log.Logger, region string, metadataBucket string) (persistence.FileStore, error) {
 	if ses, err := session.NewSession(&aws.Config{
 		Region: &region,
 	}); err != nil {

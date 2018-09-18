@@ -6,12 +6,13 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/codetaming/indy-ingest/internal/model"
 	"github.com/codetaming/indy-ingest/internal/persistence"
+	"github.com/codetaming/indy-ingest/internal/persistence/aws"
 	"github.com/codetaming/indy-ingest/internal/utils"
 )
 
 //AWS Lambda entry point
 func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	return Do(request, new(persistence.DynamoDataStore))
+	return Do(request, new(aws.DynamoDataStore))
 }
 
 //Do executes the function allowing dependencies to be specified

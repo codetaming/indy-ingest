@@ -1,4 +1,4 @@
-package publication
+package aws
 
 import (
 	"fmt"

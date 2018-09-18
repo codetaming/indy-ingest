@@ -1,4 +1,4 @@
-package persistence
+package local
 
 import (
 	"github.com/codetaming/indy-ingest/internal/model"

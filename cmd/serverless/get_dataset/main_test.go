@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/aws/aws-lambda-go/events"
-	"github.com/codetaming/indy-ingest/internal/persistence"
+	"github.com/codetaming/indy-ingest/internal/persistence/mock"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -35,5 +35,5 @@ func TestHandler(t *testing.T) {
 }
 
 func MockHandler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	return Do(request, new(persistence.MockPersistence))
+	return Do(request, new(mock.MockPersistence))
 }

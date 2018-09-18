@@ -1,4 +1,4 @@
-package persistence
+package aws
 
 import (
 	"fmt"
@@ -7,6 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/codetaming/indy-ingest/internal/model"
+	"github.com/codetaming/indy-ingest/internal/persistence"
 	"log"
 )
 
@@ -17,7 +18,7 @@ type DynamoDataStore struct {
 	metadataTable *string
 }
 
-func NewDynamoDataStore(logger *log.Logger, region string, datasetTable string, metadataTable string) (DataStore, error) {
+func NewDynamoDataStore(logger *log.Logger, region string, datasetTable string, metadataTable string) (persistence.DataStore, error) {
 	if ses, err := session.NewSession(&aws.Config{
 		Region: &region,
 	}); err != nil {
@@ -81,7 +82,7 @@ func (d DynamoDataStore) CheckDatasetIdExists(datasetId string) (bool, error) {
 	}
 	dataset := model.Dataset{}
 	if len(result.Item) == 0 {
-		return false, &NotFoundError{datasetId}
+		return false, &persistence.NotFoundError{Message: datasetId}
 	}
 	err = dynamodbattribute.UnmarshalMap(result.Item, &dataset)
 	if err != nil {
@@ -131,7 +132,7 @@ func (d DynamoDataStore) GetDataset(datasetId string) (model.Dataset, error) {
 		return dataset, err
 	}
 	if len(result.Item) == 0 {
-		return dataset, &NotFoundError{datasetId}
+		return dataset, &persistence.NotFoundError{Message: datasetId}
 	}
 	err = dynamodbattribute.UnmarshalMap(result.Item, &dataset)
 	if err != nil {
@@ -184,7 +185,7 @@ func (d DynamoDataStore) GetMetadata(datasetId string, metadataId string) (model
 		return metadata, err
 	}
 	if len(result.Item) == 0 {
-		return metadata, &NotFoundError{metadataId}
+		return metadata, &persistence.NotFoundError{Message: datasetId}
 	}
 	err = dynamodbattribute.UnmarshalMap(result.Item, &metadata)
 	if err != nil {

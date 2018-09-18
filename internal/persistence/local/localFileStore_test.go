@@ -1,4 +1,4 @@
-package persistence
+package local
 
 import (
 	"github.com/stretchr/testify/assert"
