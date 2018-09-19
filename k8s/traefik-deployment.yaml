@@ -55,4 +55,4 @@ spec:
     name: admin
   type: NodePort
   externalIPs:
-  - 10.1.1.200
+  - 10.1.1.24
