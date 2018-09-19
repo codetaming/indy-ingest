@@ -1,11 +1,10 @@
 package main
 
 import (
-	"github.com/codetaming/indy-ingest/internal/persistence/mock"
-	"testing"
-
 	"github.com/aws/aws-lambda-go/events"
+	"github.com/codetaming/indy-ingest/internal/persistence/mock"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestHandlerForCreateDataset(t *testing.T) {
