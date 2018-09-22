@@ -4,6 +4,8 @@ import (
 	"github.com/codetaming/indy-ingest/internal/model"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
+	"log"
+	"os"
 	"testing"
 )
 
@@ -70,8 +72,11 @@ func TestHandler(t *testing.T) {
 			err: errors.New("Schema URL cannot be empty"),
 		},
 	}
+	logger := log.New(os.Stdout, "ingest-test ", log.LstdFlags|log.Lshortfile)
+	validator, err := NewCachingValidator(logger, "../../data/schema_cache.json")
+	assert.Nil(t, err)
 	for _, test := range tests {
-		validationResult, err := Validate(test.schemaUrl, test.json)
+		validationResult, err := validator.Validate(test.schemaUrl, test.json)
 		assert.Equal(t, test.expect, validationResult)
 		if test.err != nil {
 			assert.NotNil(t, err)

@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"github.com/codetaming/indy-ingest/internal/persistence/local"
 	"github.com/stretchr/testify/assert"
 	"log"
@@ -12,6 +13,9 @@ import (
 
 var a *API
 var logger *log.Logger
+
+var defaultSchemaURL = `https://schema.humancellatlas.org/type/biomaterial/5.1.0/specimen_from_organism`
+var offlineSchemaURL = `https://offline-schema.json`
 
 type testDef struct {
 	name                   string
@@ -26,35 +30,42 @@ func TestHandlers_Validate(t *testing.T) {
 	tests := []testDef{
 		{
 			name:           "Validate null body",
-			in:             requestWithValidationHeaders("../../data/examples/null.json"),
+			in:             requestWithValidationHeaders("../../resources/examples/null.json", defaultSchemaURL),
 			out:            httptest.NewRecorder(),
 			expectedStatus: http.StatusInternalServerError,
 			expectedBody:   "JSON cannot be empty\n",
 		},
 		{
 			name:           "Validate empty body",
-			in:             requestWithValidationHeaders("../../data/examples/empty.json"),
+			in:             requestWithValidationHeaders("../../resources/examples/empty.json", defaultSchemaURL),
 			out:            httptest.NewRecorder(),
 			expectedStatus: http.StatusOK,
 			expectedBody:   "{\"valid\":false,\"message\":\"The document is not valid\",\"errors\":[\"describedBy is required\",\"schema_type is required\",\"biomaterial_core is required\",\"organ is required\"]}\n",
 		},
 		{
 			name:           "Validate with valid JSON",
-			in:             requestWithValidationHeaders("../../data/examples/valid.json"),
+			in:             requestWithValidationHeaders("../../resources/examples/valid.json", defaultSchemaURL),
 			out:            httptest.NewRecorder(),
 			expectedStatus: http.StatusOK,
 			expectedBody:   "{\"valid\":true,\"message\":\"The document is valid\",\"errors\":null}\n",
 		},
 		{
+			name:           "Validate with valid JSON and schema offline",
+			in:             requestWithValidationHeaders("../../resources/examples/valid.json", offlineSchemaURL),
+			out:            httptest.NewRecorder(),
+			expectedStatus: http.StatusInternalServerError,
+			expectedBody:   "The schema provided is not available\n",
+		},
+		{
 			name:           "Validate with invalid JSON",
-			in:             requestWithValidationHeaders("../../data/examples/invalid.json"),
+			in:             requestWithValidationHeaders("../../resources/examples/invalid.json", defaultSchemaURL),
 			out:            httptest.NewRecorder(),
 			expectedStatus: http.StatusOK,
 			expectedBody:   "{\"valid\":false,\"message\":\"The document is not valid\",\"errors\":[\"biomaterial_id is required\",\"Additional property k is not allowed\"]}\n",
 		},
 		{
 			name:           "Validate no header",
-			in:             baseRequest("../../data/examples/invalid.json"),
+			in:             baseRequest("../../resources/examples/invalid.json"),
 			out:            httptest.NewRecorder(),
 			expectedStatus: http.StatusInternalServerError,
 			expectedBody:   "Link header must be provided\n",
@@ -70,10 +81,10 @@ func TestHandlers_Validate(t *testing.T) {
 	}
 }
 
-func requestWithValidationHeaders(bodyFile string) *http.Request {
+func requestWithValidationHeaders(bodyFile string, schemaURL string) *http.Request {
 	request := baseRequest(bodyFile)
 	request.Header.Set("Content-Type", "application/json")
-	request.Header.Set("Link", `<https://schema.humancellatlas.org/type/biomaterial/5.1.0/specimen_from_organism>; rel="describedby"`)
+	request.Header.Set("Link", fmt.Sprintf(`<%s>; rel="describedby"`, schemaURL))
 	return request
 }
 

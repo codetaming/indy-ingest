@@ -15,6 +15,6 @@
 /pipeline-osx
 /samples.json
 /samples.json.gz
-/data/sample.xml.gz
-/data/samples.json.gz
+/resources/sample.xml.gz
+/resources/samples.json.gz
 /env

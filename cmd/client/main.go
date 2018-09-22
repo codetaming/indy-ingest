@@ -17,9 +17,12 @@ func main() {
 	resp, err := client.Do(req)
 	if err != nil {
 		fmt.Printf("Error with request: %s", err.Error())
+	}
+	body, _ := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		fmt.Printf("Error: %d\n%s", resp.StatusCode, body)
 	} else {
-		body, _ := ioutil.ReadAll(resp.Body)
-		defer resp.Body.Close()
 		var v model.ValidationResult
 		json.Unmarshal(body, &v)
 		fmt.Printf("Result: %s", v.Message)
