@@ -50,13 +50,13 @@ func TestHandlers_Validate(t *testing.T) {
 			expectedStatus: http.StatusOK,
 			expectedBody:   "{\"valid\":true,\"message\":\"The document is valid\",\"errors\":null}\n",
 		},
-		/*{
-			name:           "Validate with valid JSON and schema offline",
+		{
+			name:           "Validate with valid JSON and schema offline in cache",
 			in:             requestWithValidationHeaders("../../resources/examples/valid.json", offlineSchemaURL),
 			out:            httptest.NewRecorder(),
-			expectedStatus: http.StatusInternalServerError,
-			expectedBody:   "The schema provided is not available\n",
-		},*/
+			expectedStatus: http.StatusOK,
+			expectedBody:   "{\"valid\":true,\"message\":\"The document is valid\",\"errors\":null}\n",
+		},
 		{
 			name:           "Validate with invalid JSON",
 			in:             requestWithValidationHeaders("../../resources/examples/invalid.json", defaultSchemaURL),
@@ -131,7 +131,7 @@ func init() {
 		logger.Fatalf("failed to create file store: %v", err)
 	}
 
-	validator, err := validator.NewCachingValidator(logger, "data/schema_cache.json")
+	validator, err := validator.NewCachingValidator(logger, "../../data/schema_cache.json")
 	if err != nil {
 		logger.Fatalf("failed to create validator: %v", err)
 	}
