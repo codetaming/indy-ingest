@@ -5,7 +5,6 @@ import (
 	"github.com/codetaming/indy-ingest/internal/model"
 	"github.com/codetaming/indy-ingest/internal/persistence"
 	"github.com/codetaming/indy-ingest/internal/utils"
-	"github.com/codetaming/indy-ingest/internal/validator"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"io/ioutil"
@@ -32,7 +31,7 @@ func (api *API) AddMetadata(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result, err := validator.Validate(schemaUrl, string(b[:]))
+	result, err := api.validator.Validate(schemaUrl, string(b[:]))
 	w.Header().Set("content-type", "application/json")
 
 	if result.Valid {

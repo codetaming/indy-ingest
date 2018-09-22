@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/codetaming/indy-ingest/cmd/api"
 	"github.com/codetaming/indy-ingest/internal/persistence/aws"
+	"github.com/codetaming/indy-ingest/internal/validator"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
@@ -10,11 +11,12 @@ import (
 )
 
 var (
-	serverPort     = os.Getenv("SERVER_PORT")
-	region         = os.Getenv("AWS_REGION")
-	datasetTable   = os.Getenv("DATASET_TABLE")
-	metadataTable  = os.Getenv("METADATA_TABLE")
-	metadataBucket = os.Getenv("METADATA_BUCKET")
+	serverPort      = os.Getenv("SERVER_PORT")
+	region          = os.Getenv("AWS_REGION")
+	datasetTable    = os.Getenv("DATASET_TABLE")
+	metadataTable   = os.Getenv("METADATA_TABLE")
+	metadataBucket  = os.Getenv("METADATA_BUCKET")
+	schemaCacheFile = os.Getenv("SCHEMA_CACHE_FILE")
 )
 
 func init() {
@@ -33,6 +35,12 @@ func init() {
 	if metadataBucket == "" {
 		log.Fatal("$METADATA_BUCKET not set")
 	}
+	if metadataBucket == "" {
+		log.Fatal("$METADATA_BUCKET not set")
+	}
+	if schemaCacheFile == "" {
+		log.Fatal("$SCHEMA_CACHE_FILE not set")
+	}
 }
 
 func main() {
@@ -50,7 +58,12 @@ func main() {
 		logger.Fatalf("failed to create file store: %v", err)
 	}
 
-	a := api.NewAPI(logger, dataStore, fileStore)
+	validator, err := validator.NewCachingValidator(logger, schemaCacheFile)
+	if err != nil {
+		logger.Fatalf("failed to create validator: %v", err)
+	}
+
+	a := api.NewAPI(logger, dataStore, fileStore, validator)
 	a.SetupRoutes(router)
 
 	logger.Printf("server starting on port %s", serverPort)

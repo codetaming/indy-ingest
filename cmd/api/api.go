@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/codetaming/indy-ingest/internal/persistence"
+	"github.com/codetaming/indy-ingest/internal/validator"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
@@ -12,6 +13,7 @@ type API struct {
 	logger    *log.Logger
 	dataStore persistence.DataStore
 	fileStore persistence.FileStore
+	validator validator.Validator
 }
 
 func (api *API) SetupRoutes(r *mux.Router) {
@@ -32,10 +34,11 @@ func (api *API) Logger(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func NewAPI(logger *log.Logger, dataStore persistence.DataStore, fileStore persistence.FileStore) *API {
+func NewAPI(logger *log.Logger, dataStore persistence.DataStore, fileStore persistence.FileStore, validator validator.Validator) *API {
 	return &API{
 		logger:    logger,
 		dataStore: dataStore,
 		fileStore: fileStore,
+		validator: validator,
 	}
 }
