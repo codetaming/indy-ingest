@@ -42,6 +42,7 @@ func Do(request events.APIGatewayProxyRequest, dec persistence.DatasetExistenceC
 
 	bodyJson := request.Body
 
+	validator, _ := validator.NewSimpleValidator()
 	result, err := validator.Validate(schemaUrl, bodyJson)
 	if err != nil {
 		return utils.RespondToInternalError(err)

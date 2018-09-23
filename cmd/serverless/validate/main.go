@@ -28,6 +28,8 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	}
 
 	bodyJson := request.Body
+
+	validator, _ := validator.NewSimpleValidator()
 	result, err := validator.Validate(schemaUrl, bodyJson)
 
 	if err != nil {
