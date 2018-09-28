@@ -21,7 +21,7 @@ spec:
       containers:
       - name: ingest
         image: codetaming/indy-ingest-arm
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         env:
         - name: SERVER_PORT
           value: "9000"
@@ -49,6 +49,8 @@ spec:
     targetPort: 9000
     port: 80
   type: NodePort
+  externalIPs:
+  - 192.168.0.200
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress

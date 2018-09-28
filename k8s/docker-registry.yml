@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: docker-registry
+  labels:
+    name: docker-registry
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: registry
+  namespace: docker-registry
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: registry
+    spec:
+      containers:
+      - name: registry
+        image: vsellier/docker-registry-arm
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: registry-svc
+  namespace: docker-registry
+spec:
+  selector:
+    app: registry
+  ports:
+  - name: http
+    targetPort: 5000
+    port: 80
+  type: NodePort
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: registry-ingress
+  namespace: docker-registry
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+  - host: docker-registry.k8s.codetaming.org
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: registry-svc
+          servicePort: 80
