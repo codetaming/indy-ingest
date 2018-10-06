@@ -17,6 +17,7 @@ type API struct {
 }
 
 func (api *API) SetupRoutes(r *mux.Router) {
+	r.Handle("/", http.FileServer(http.Dir("./ui")))
 	r.HandleFunc("/validate", api.Logger(api.Validate)).Methods("POST")
 	r.HandleFunc("/dataset", api.Logger(api.CreateDataset)).Methods("POST")
 	r.HandleFunc("/dataset", api.Logger(api.ListDatasets)).Methods("GET")

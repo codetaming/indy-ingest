@@ -48,16 +48,21 @@ func main() {
 
 	logger := log.New(os.Stdout, "ingest ", log.LstdFlags|log.Lshortfile)
 
+	logger.Printf("starting ingest")
+
+	logger.Printf("configuring data store")
 	dataStore, err := aws.NewDynamoDataStore(logger, region, datasetTable, metadataTable)
 	if err != nil {
 		logger.Fatalf("failed to create data store: %v", err)
 	}
 
+	logger.Printf("configuring file store")
 	fileStore, err := aws.NewS3FileStore(logger, region, metadataBucket)
 	if err != nil {
 		logger.Fatalf("failed to create file store: %v", err)
 	}
 
+	logger.Printf("configuring validator")
 	validator, err := validator.NewCachingValidator(logger, schemaCacheFile)
 	if err != nil {
 		logger.Fatalf("failed to create validator: %v", err)
