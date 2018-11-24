@@ -6,7 +6,7 @@ He argued that if you build an passenger aircraft and a year later require an ai
 
 He proposed treating software as a collection of self-contained “cells” that communicate through messages. This became the basis of Object Oriented Software design and the programming language SmallTalk, the predecessor to many modern programming languages such as Java and Swift.
 
-With the move to cloud-based software Alan Kay’s work has come to the fore again and the idea of building highly scalable distributed systems by creating self-contained pieces and using messages between them for orchestration is a preferred approach to building cloud-based software and one I propose using on HCA DCP Ingest to maximise flexibility.
+With the move to cloud-based software Alan Kay’s work has come to the fore again and the idea of building highly scalable distributed systems by creating self-contained pieces and using messages between them for orchestration is a preferred approach to building cloud-based software and one I propose using this to maximise flexibility.
 
 By building a system based a self-contained "cells" that perform a single task and communicate by messaging we can build a system that minimises dependencies and maximises scalability. 
 
